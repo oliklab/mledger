@@ -165,7 +165,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
                   >
                     <Key className="mr-3 h-4 w-4 text-gray-400" />
-                    Profile Settings
+                    Profile
                   </button>
                   <button
                     onClick={() => {
