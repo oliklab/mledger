@@ -7,7 +7,7 @@ import { GoogleAnalytics } from '@next/third-parties/google'
 
 export const metadata: Metadata = {
   title: process.env.NEXT_PUBLIC_PRODUCTNAME,
-  description: "The best way to build your SaaS product.",
+  description: "The simple way to track materials, recipes, and profits - for the creators.",
 };
 
 export default function RootLayout({
@@ -16,21 +16,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   let theme = process.env.NEXT_PUBLIC_THEME
-  if(!theme) {
+  if (!theme) {
     theme = "theme-sass3"
   }
   const gaID = process.env.NEXT_PUBLIC_GOOGLE_TAG;
   return (
     <html lang="en">
-    <body className={theme}>
-      {children}
-      <Analytics />
-      <CookieConsent />
-      { gaID && (
-          <GoogleAnalytics gaId={gaID}/>
-      )}
+      <body className={theme}>
+        {children}
+        <Analytics />
+        <CookieConsent />
+        {gaID && (
+          <GoogleAnalytics gaId={gaID} />
+        )}
 
-    </body>
+      </body>
     </html>
   );
 }

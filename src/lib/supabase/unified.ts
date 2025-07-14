@@ -36,6 +36,7 @@ export class SassClient {
       email: p.email,
       password: p.password,
       options: {
+        emailRedirectTo: process.env.NEXT_APP_BASE_URL + '/app',
         data: {
           first_name: p.first_name,
           last_name: p.last_name,
