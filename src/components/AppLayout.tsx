@@ -9,20 +9,41 @@ import {
   X,
   ChevronDown,
   LogOut,
-  Key, Files, LucideListTodo,
+  Key,
   DoorOpen,
+  HeartPulse,
+  LucideHeartPulse,
+  ShoppingBag,
+  ShoppingBasket,
+  CookingPot,
+  StoreIcon,
+  ListOrderedIcon,
 } from 'lucide-react';
 import { useGlobal } from "@/lib/context/GlobalContext";
 import { createSPASassClient } from "@/lib/supabase/client";
+import md5 from 'md5';
+import GravatarCard from '@/components/Gravatar';
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [isUserDropdownOpen, setUserDropdownOpen] = useState(false);
+
   const pathname = usePathname();
   const router = useRouter();
-
-
   const { user } = useGlobal();
+
+  const navigation = [
+    { name: 'Dashbaord', href: '/app', icon: Home },
+
+    { name: 'Raw Materials', href: '/app/materials', icon: ShoppingBasket },
+    { name: 'Recipe', href: '/app/recipe', icon: CookingPot },
+    { name: 'Product Inventory', href: '/app/inventory', icon: StoreIcon },
+    { name: 'Orders', href: '/app/orders', icon: ListOrderedIcon },
+
+    { name: 'Profile', href: '/app/profile', icon: User },
+    { name: 'Support', href: '/app/support', icon: LucideHeartPulse },
+    { name: 'Lanidng Page', href: '/', icon: DoorOpen },
+  ];
 
   const handleLogout = async () => {
     try {
@@ -32,25 +53,19 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       console.error('Error logging out:', error);
     }
   };
-  const handleChangePassword = async () => {
-    router.push('/app/user-settings')
+  const handleGoToProfile = async () => {
+    router.push('/app/profile');
   };
 
-  const getInitials = (email: string) => {
-    const parts = email.split('@')[0].split(/[._-]/);
-    return parts.length > 1
-      ? (parts[0][0] + parts[1][0]).toUpperCase()
-      : parts[0].slice(0, 2).toUpperCase();
+  const getAvatarUrl = (email?: string | null, size: number = 32) => {
+    if (!email) {
+      return `https://www.gravatar.com/avatar/?s=${size}&d=mp`;
+    }
+    const hash = md5(email.trim().toLowerCase());
+    return `https://www.gravatar.com/avatar/${hash}?s=${size}&d=mp`;
   };
 
   const productName = process.env.NEXT_PUBLIC_PRODUCTNAME;
-
-  const navigation = [
-    { name: 'Homepage', href: '/app', icon: Home },
-    { name: 'Profile', href: '/app/profile', icon: User },
-    { name: 'Maker\'s Ledger', href: '/', icon: DoorOpen }
-  ];
-
   const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
 
   return (
@@ -115,33 +130,42 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               onClick={() => setUserDropdownOpen(!isUserDropdownOpen)}
               className="flex items-center space-x-2 text-sm text-gray-700 hover:text-gray-900"
             >
-              <div className="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center">
-                <span className="text-primary-700 font-medium">
-                  {user ? getInitials(user.email) : '??'}
-                </span>
-              </div>
-              <span>{user?.email || 'Loading...'}</span>
+              <img
+                src={getAvatarUrl(user?.email, 32)}
+                alt="User avatar"
+                className="w-8 h-8 rounded-full"
+              />
+              <span>{user?.profile?.first_name || user?.email || 'Loading...'}</span>
               <ChevronDown className="h-4 w-4" />
             </button>
 
             {isUserDropdownOpen && (
-              <div className="absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg border">
-                <div className="p-2 border-b border-gray-100">
-                  <p className="text-xs text-gray-500">Signed in as</p>
-                  <p className="text-sm font-medium text-gray-900 truncate">
-                    {user?.email}
-                  </p>
-                </div>
+              <div className="absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg border">
+                {user ? (
+                  <>
+                    <GravatarCard
+                      email={user.email}
+                      fallback={
+                        <div className="p-4 flex items-center space-x-3 border-b">
+                          <img src={getAvatarUrl(user.email, 64)} alt="User avatar" className="w-12 h-12 rounded-full" />
+                          <div className="min-w-0 flex-1">
+                            <p className="text-sm font-medium text-gray-900 truncate">{`${user.profile?.first_name || ''} ${user.profile?.last_name || ''}`.trim() || 'User'}</p>
+                            <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                          </div>
+                        </div>
+                      }
+                    />
+                  </>
+                ) : (
+                  <div className="p-4 text-sm text-gray-500">Loading user...</div>
+                )}
                 <div className="py-1">
                   <button
-                    onClick={() => {
-                      setUserDropdownOpen(false);
-                      handleChangePassword()
-                    }}
+                    onClick={() => { setUserDropdownOpen(false); handleGoToProfile() }}
                     className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
                   >
                     <Key className="mr-3 h-4 w-4 text-gray-400" />
-                    Change Password
+                    Profile Settings
                   </button>
                   <button
                     onClick={() => {

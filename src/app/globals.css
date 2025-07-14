@@ -425,3 +425,71 @@
     @apply bg-background text-foreground;
   }
 }
+
+.gravatar-card {
+  background: linear-gradient(159.68deg, #C1AF99 -35.31%, #EEEAE6 73.65%);
+  border-radius: 8px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  width: 320px;
+}
+
+.gravatar-card__avatar {
+  border-radius: 50%;
+  height: 120px;
+  margin-bottom: 16px;
+  width: 120px;
+}
+
+.gravatar-card__name {
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 48px;
+  letter-spacing: 0.25px;
+  margin: 0 0 4px;
+}
+
+.gravatar-card__meta {
+  color: rgba(16, 21, 23, 0.6);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 21px;
+  margin-bottom: 16px;
+}
+
+.gravatar-card__meta-personal {
+  display: flex;
+  gap: 8px;
+}
+
+.gravatar-card__description {
+  display: -webkit-box;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 21px;
+  margin: 0 0 16px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.gravatar-card__network {
+  display: flex;
+  gap: 4px;
+}
+
+.gravatar-card__network img {
+  display: flex;
+  height: 32px;
+  width: 32px;
+}
+
+.gravatar-card__error {
+  padding: 20px;
+  color: #CC1818;
+  background: #ffe6e6;
+  border-radius: 4px;
+}
