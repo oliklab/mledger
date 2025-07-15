@@ -49,7 +49,7 @@ export default function Home() {
   const stats = [
     { label: 'Makers & Businesses Onboarded', value: '100+' },
     { label: 'Product Recipes Created', value: '500+' },
-    { label: 'Supporting Creators from Worldwide', value: '5+' },
+    { label: 'Supporting Countries', value: '5+' },
     { label: 'Finished Goods', value: '$30K' }
   ];
 
