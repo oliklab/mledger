@@ -31,7 +31,7 @@ export default function GravatarCard({ email, fallback }: { email: string | null
       }
       setGravatarLoading(true);
       try {
-        const response = await fetch(`/api/profile/${email}`);
+        const response = await fetch(`/api/profile?email=${email}`);
         if (response.ok) {
           const data = await response.json();
           if (data && !data.error) {
