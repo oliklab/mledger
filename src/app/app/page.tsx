@@ -36,6 +36,15 @@ export default function DashboardContent() {
           </CardDescription>
         </CardHeader>
       </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle>Coming Soon....</CardTitle>
+          <CardDescription className="flex items-center gap-2">
+            <CalendarDays className="h-4 w-4" />
+            Thank you for joining Maker's Ledger. The product will be release soon.
+          </CardDescription>
+        </CardHeader>
+      </Card>
 
       {/* Quick Actions */}
       {/* <Card>

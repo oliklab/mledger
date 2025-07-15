@@ -1,44 +1,53 @@
 export interface PricingTier {
-    name: string;
-    price: number;
-    description: string;
-    features: string[];
-    popular?: boolean;
+  name: string;
+  price: number;
+  description: string;
+  features: string[];
+  popular?: boolean;
 }
 
 class PricingService {
-    private static tiers: PricingTier[] = [];
+  private static tiers: PricingTier[] = [{
+    name: 'Hobbyist',
+    price: 3,
+    description: 'For those just getting started and selling occasionally.',
+    features: [
+      'Track up to 100 Materials',
+      'Create up to 200 Product Recipes',
+      'Log up to 1K Sales/Month',
+      'Automatic Product Costing',
+      'Low-Stock Alerts',
+    ],
+    popular: false,
+  },
+  {
+    name: 'Crafter',
+    price: 7,
+    description: 'For those just getting started and selling occasionally.',
+    features: [
+      'Unlimited Materials',
+      'Unlimited Product Recipes',
+      'Unlimited Sales/Month',
+      'Automated Sell record from Etsy and Shopify',
+      'Low-Stock Alerts',
+    ],
+    popular: true,
+  },
+  ];
 
-    static initialize() {
-        const names = process.env.NEXT_PUBLIC_TIERS_NAMES?.split(',') || [];
-        const prices = process.env.NEXT_PUBLIC_TIERS_PRICES?.split(',').map(Number) || [];
-        const descriptions = process.env.NEXT_PUBLIC_TIERS_DESCRIPTIONS?.split(',') || [];
-        const features = process.env.NEXT_PUBLIC_TIERS_FEATURES?.split(',').map(f => f.split('|')) || [];
-        const popularTier = process.env.NEXT_PUBLIC_POPULAR_TIER;
+  static getAllTiers(): PricingTier[] {
+    return this.tiers;
+  }
 
-        this.tiers = names.map((name, index) => ({
-            name,
-            price: prices[index],
-            description: descriptions[index],
-            features: features[index] || [],
-            popular: name === popularTier
-        }));
-    }
+  static getCommonFeatures(): string[] {
+    return [
+      'Online Support within 2 business day.',
+    ];
+  }
 
-    static getAllTiers(): PricingTier[] {
-        if (this.tiers.length === 0) {
-            this.initialize();
-        }
-        return this.tiers;
-    }
-
-    static getCommonFeatures(): string[] {
-        return process.env.NEXT_PUBLIC_COMMON_FEATURES?.split(',') || [];
-    }
-
-    static formatPrice(price: number): string {
-        return `$${price}`;
-    }
+  static formatPrice(price: number): string {
+    return `$${price}`;
+  }
 
 }
 
