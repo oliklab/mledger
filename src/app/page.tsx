@@ -80,11 +80,11 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-5xl md:text-6xl font-bold tracking-tight">
-              Price Your Crafts
-              <span className="block text-4xl md:text-5xl text-primary-600">With Confidence.</span>
+              Simple Ledger for Makers
+              <span className="block text-4xl md:text-5xl text-primary-600">With Confidence</span>
             </h1>
             <p className="mt-6 text-xl text-gray-600 max-w-3xl mx-auto">
-              The simple app for makers to track materials, calculate exact product costs, and finally understand their profit.
+              The simple app for makers to track materials, calculate exact product costs, and understand their profit.
             </p>
             <p className="mt-4 text-lg font-semibold text-gray-800">
               Coming soon! Get ready to take control of your craft business.
@@ -116,7 +116,7 @@ export default function Home() {
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold">Everything You Need</h2>
             <p className="mt-4 text-xl text-gray-600">
-              Built with modern technologies for reliability and speed with simplicity in mind.
+              Built with modern technologies for reliability, with simplicity in mind.
             </p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -176,7 +176,7 @@ export default function Home() {
               <h4 className="text-sm font-semibold text-gray-900">Resources</h4>
               <ul className="mt-4 space-y-2">
                 <li>
-                  <Link href="/legal/documentation" className="text-gray-600 hover:text-gray-900">
+                  <Link href="/docs/documentation" className="text-gray-600 hover:text-gray-900">
                     Documentation
                   </Link>
                 </li>
@@ -186,12 +186,12 @@ export default function Home() {
               <h4 className="text-sm font-semibold text-gray-900">Legal</h4>
               <ul className="mt-4 space-y-2">
                 <li>
-                  <Link href="/legal/privacy" className="text-gray-600 hover:text-gray-900">
+                  <Link href="/docs/privacy" className="text-gray-600 hover:text-gray-900">
                     Privacy
                   </Link>
                 </li>
                 <li>
-                  <Link href="/legal/terms" className="text-gray-600 hover:text-gray-900">
+                  <Link href="/docs/terms" className="text-gray-600 hover:text-gray-900">
                     Terms
                   </Link>
                 </li>

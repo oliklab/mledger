@@ -1,85 +1,44 @@
-# Refund Policy
+# Refund Policy for Maker's Ledger
 
-Last Updated: December 14, 2024
+**Last Updated:** July 15, 2025
 
-## 1. Company Information
+This Refund Policy outlines the terms and conditions under which refunds are provided for our subscription-based service ("Service"). By subscribing to Maker's Ledger, you agree to this Refund Policy and our Terms of Service.
 
-Company Name:
+### 1. General Policy
 
-Tax number: 1234567890
+Due to the nature of our digital service, we have a **no-refund policy** for our monthly subscription fees once a billing cycle has commenced. When you subscribe, you are paying for access to the Service for the upcoming month, and this access is granted immediately.
 
-## 2. General Policy
+### 2. Monthly Subscriptions
 
-We strive to ensure customer satisfaction with all our digital services and products. This policy outlines our procedures for refunds and cancellations.
+* **No Refunds for Partial Months:** We do not offer prorated refunds or credits for any partial month's service or for periods where your account was not used.
+* **Cancellation:** If you choose to cancel your subscription, your cancellation will take effect at the end of your current billing cycle. You will continue to have access to the Service until that date, and you will not be charged for the next billing cycle.
 
-## 3. Subscription Services
+### 3. Your Statutory Rights (14-Day Cooling-Off Period)
 
-### 3.1 Cancellation
-- You may cancel your subscription at any time
-- Access continues until the end of the billing period
-- No partial refunds for unused time
+Under Irish and EU law, consumers typically have a 14-day "cooling-off" period to withdraw from a contract for digital services.
 
-### 3.2 Automatic Renewals
-- Subscriptions renew automatically
-- Cancel at least 24 hours before renewal
-- No refunds for automatic renewals
+However, this right of withdrawal is waived if you consent to the immediate performance of the contract (i.e., getting immediate access to the Service) and acknowledge that you will lose your right of withdrawal as a result.
 
-## 4. Data Products
+**By subscribing to Maker's Ledger and accessing the Service, you explicitly agree to the immediate provision of the service and acknowledge that you thereby waive your statutory 14-day right of withdrawal for a refund.**
 
-### 4.1 Digital Products
-- Data products are non-refundable once delivered
-- Sample data available before purchase
-- Technical support provided for access issues
+### 4. Exceptions
 
-### 4.2 Custom Data Solutions
-- Custom orders are non-refundable
-- Requirements confirmed before processing
-- Revision period available
+We believe in being fair and may consider providing a refund, in our sole discretion, under the following specific circumstances:
 
-## 5. Refund Eligibility
+* **Billing Errors:** If you have been charged incorrectly due to a technical error on our part.
+* **Significant Service Unavailability:** If the Service was completely unavailable or unusable for a prolonged period within a billing cycle due to a fault directly attributable to Maker's Ledger (not including scheduled maintenance for which we have provided notice).
 
-Refunds may be considered for:
-- Technical issues preventing access
-- Service unavailability
-- Incorrect charges
-- Legal requirements
+Refund requests under these exceptions will be considered on a case-by-case basis.
 
-## 6. Refund Process
+### 5. How to Discuss a Billing Issue or Request a Refund
 
-To request a refund:
-1. Contact support within 14 days
-2. Provide order details
-3. Explain refund reason
-4. Allow 5-10 business days for processing
+If you believe you are eligible for a refund under our exceptions policy, please contact our support team within 14 days of the charge appearing on your statement.
 
-## 7. Payment Processing
+* **Email:** kzirtm@gmail.com
+* **Please include:** The email address associated with your account, the date and amount of the charge, and a clear explanation of why you are requesting a refund.
 
-### 7.1 Refund Method
-- Refunds processed through original payment method
-- Processed via Paddle
-- Currency same as original payment
+We will review all requests and communicate our decision within a reasonable timeframe.
 
-### 7.2 Processing Time
-- 2-5 business days for approval
-- 5-10 business days for bank processing
-- May vary by payment method
+### 6. Changes to This Policy
 
-## 8. Exceptions
-
-No refunds for:
-- Used or accessed digital products
-- Expired subscriptions
-- Violations of Terms of Service
-- Fraudulent activities
-
-## 9. Customer Support
-
-For refund requests contact:
-Email: contact@komiru.com
-
-## 10. Changes to Policy
-
-- We reserve the right to modify this policy
-- Changes effective upon posting
-- Current customers notified of material changes
-
+We reserve the right to modify this Refund Policy at any time. Any changes will be posted on this page and will apply to all subscriptions initiated after the date of the change.

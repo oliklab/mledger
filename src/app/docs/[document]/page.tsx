@@ -16,6 +16,10 @@ const legalDocuments = {
   'refund': {
     title: 'Refund Policy',
     path: '/terms/refund-policy.md'
+  },
+  'documentation': {
+    title: 'User Guide',
+    path: '/terms/user-guide.md'
   }
 } as const;
 
