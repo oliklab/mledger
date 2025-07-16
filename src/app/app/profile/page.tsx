@@ -2,14 +2,15 @@
 import React, { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { useGlobal } from '@/lib/context/GlobalContext';
-import { createSPASassClient } from '@/lib/supabase/client';
+import { UseUserContext } from '@/lib/context/GlobalContext';
+import { NewSPASassClient } from '@/lib/supabase/client';
 import { Key, User, CheckCircle } from 'lucide-react';
 import { MFASetup } from '@/components/MFASetup';
 import GravatarCard from '@/components/Gravatar';
+import { AuthStore } from '@/storage/auth';
 
 export default function UserSettingsPage() {
-  const { user } = useGlobal();
+  const { user } = UseUserContext();
 
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -29,13 +30,10 @@ export default function UserSettingsPage() {
     setSuccess('');
 
     try {
-      const supabase = await createSPASassClient();
-      const client = supabase.getSupabaseClient();
+      const supabase = await NewSPASassClient();
+      const auth = new AuthStore(supabase)
 
-      const { error } = await client.auth.updateUser({
-        password: newPassword
-      });
-
+      const { error } = await auth.UpdatePassword(newPassword);
       if (error) throw error;
 
       setSuccess('Password updated successfully');

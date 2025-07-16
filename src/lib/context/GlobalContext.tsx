@@ -1,53 +1,29 @@
-// src/lib/context/GlobalContext.tsx
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { createSPASassClient } from '@/lib/supabase/client';
-import { UserProfile } from '@/models/profiles';
-
-
-type User = {
-  email: string;
-  id: string;
-  registered_at: Date;
-  profile: UserProfile;
-};
+import { NewSPASassClient } from '@/lib/supabase/client';
+import { AuthStore, AuthUser } from '@/storage/auth';
 
 interface GlobalContextType {
   loading: boolean;
-  user: User | null;  // Add this
+  user: AuthUser | null;
 }
 
 const GlobalContext = createContext<GlobalContextType | undefined>(undefined);
 
 export function GlobalProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<User | null>(null);  // Add this
+  const [user, setUser] = useState<AuthUser | null>(null);
 
   useEffect(() => {
     async function loadData() {
       try {
-        const supabase = await createSPASassClient();
-        const client = supabase.getSupabaseClient();
+        const supabase = await NewSPASassClient();
+        const auth = new AuthStore(supabase);
 
-        // Get user data
-        const { data: { user: authUser } } = await client.auth.getUser();
-
+        const authUser = await auth.GetAuthenticatedUser();
         if (authUser) {
-          const { data: profileData, error: profileError } = await client
-            .from('profiles')
-            .select('*')
-            .eq('id', authUser.id)
-            .single();
-
-          if (profileError) throw profileError;
-
-          setUser({
-            email: authUser.email!,
-            id: authUser.id,
-            registered_at: new Date(authUser.created_at),
-            profile: profileData as UserProfile,
-          });
+          setUser(authUser);
         }
       } catch (error) {
         console.error('Error loading data:', error);
@@ -67,7 +43,7 @@ export function GlobalProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-export const useGlobal = () => {
+export const UseUserContext = () => {
   const context = useContext(GlobalContext);
   if (context === undefined) {
     throw new Error('useGlobal must be used within a GlobalProvider');

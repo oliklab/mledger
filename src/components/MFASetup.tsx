@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { createSPASassClient } from '@/lib/supabase/client';
+import { NewSPASassClient } from '@/lib/supabase/client';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Key, CheckCircle, XCircle, Loader2 } from 'lucide-react';
@@ -24,8 +24,8 @@ export function MFASetup({ onStatusChange }: MFASetupProps) {
 
   const fetchFactors = async () => {
     try {
-      const supabase = await createSPASassClient();
-      const { data, error } = await supabase.getSupabaseClient().auth.mfa.listFactors();
+      const supabase = await NewSPASassClient();
+      const { data, error } = await supabase.SupabaseClient().auth.mfa.listFactors();
 
       if (error) throw error;
 
@@ -52,13 +52,13 @@ export function MFASetup({ onStatusChange }: MFASetupProps) {
     setActionInProgress(true);
 
     try {
-      const supabase = await createSPASassClient();
+      const supabase = await NewSPASassClient();
       const enrollParams: MFAEnrollTOTPParams = {
         factorType: 'totp',
         friendlyName: friendlyName.trim()
       };
 
-      const { data, error } = await supabase.getSupabaseClient().auth.mfa.enroll(enrollParams);
+      const { data, error } = await supabase.SupabaseClient().auth.mfa.enroll(enrollParams);
 
       if (error) throw error;
 
@@ -78,8 +78,8 @@ export function MFASetup({ onStatusChange }: MFASetupProps) {
     setActionInProgress(true);
 
     try {
-      const supabase = await createSPASassClient();
-      const client = supabase.getSupabaseClient();
+      const supabase = await NewSPASassClient();
+      const client = supabase.SupabaseClient();
 
       const challenge = await client.auth.mfa.challenge({ factorId });
       if (challenge.error) throw challenge.error;
@@ -106,8 +106,8 @@ export function MFASetup({ onStatusChange }: MFASetupProps) {
     setActionInProgress(true);
 
     try {
-      const supabase = await createSPASassClient();
-      const { error } = await supabase.getSupabaseClient().auth.mfa.unenroll({ factorId });
+      const supabase = await NewSPASassClient();
+      const { error } = await supabase.SupabaseClient().auth.mfa.unenroll({ factorId });
 
       if (error) throw error;
 

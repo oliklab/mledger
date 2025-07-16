@@ -1,11 +1,12 @@
 'use client';
 
-import { createSPASassClient } from '@/lib/supabase/client';
+import { NewSPASassClient } from '@/lib/supabase/client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import SSOButtons from "@/components/SSOButtons";
-import { UserProfile } from '@/models/profiles';
+import { UserProfile } from '@/storage/profiles';
+import { AuthStore } from '@/storage/auth';
 
 export default function RegisterPage() {
   const [profile, setProfile] = useState<UserProfile>({} as UserProfile);
@@ -64,10 +65,11 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      const supabase = await createSPASassClient();
-      const { error } = await supabase.signUpWithDetails(profile);
-
+      const supabase = await NewSPASassClient();
+      const authstore = new AuthStore(supabase).WithProfile(profile);
+      const { error } = await authstore.SignUpWithDetails();
       if (error) throw error;
+
       router.push('/auth/verify-email');
 
     } catch (err: Error | unknown) {

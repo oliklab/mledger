@@ -1,12 +1,12 @@
 "use client";
 import React from 'react';
-import { useGlobal } from '@/lib/context/GlobalContext';
+import { UseUserContext } from '@/lib/context/GlobalContext';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { CalendarDays, Settings, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 
 export default function DashboardContent() {
-  const { loading, user } = useGlobal();
+  const { loading, user } = UseUserContext();
 
   const getDaysSinceRegistration = () => {
     if (!user?.registered_at) return 0;

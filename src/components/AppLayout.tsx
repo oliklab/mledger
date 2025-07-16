@@ -19,8 +19,8 @@ import {
   StoreIcon,
   ListOrderedIcon,
 } from 'lucide-react';
-import { useGlobal } from "@/lib/context/GlobalContext";
-import { createSPASassClient } from "@/lib/supabase/client";
+import { UseUserContext } from "@/lib/context/GlobalContext";
+import { NewSPASassClient } from "@/lib/supabase/client";
 import md5 from 'md5';
 import GravatarCard from '@/components/Gravatar';
 
@@ -30,7 +30,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   const pathname = usePathname();
   const router = useRouter();
-  const { user } = useGlobal();
+  const { user } = UseUserContext();
 
   const navigation = [
     { name: 'Dashbaord', href: '/app', icon: Home },
@@ -47,8 +47,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   const handleLogout = async () => {
     try {
-      const client = await createSPASassClient();
-      await client.logout();
+      const client = await NewSPASassClient();
+      await client.Logout();
     } catch (error) {
       console.error('Error logging out:', error);
     }
