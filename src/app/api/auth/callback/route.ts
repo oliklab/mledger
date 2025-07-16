@@ -1,6 +1,7 @@
 // src/app/api/auth/callback/route.ts
 import { NextResponse } from 'next/server'
 import { NewSSRSassClient } from "@/lib/supabase/server";
+import { AuthStore } from '@/storage/auth';
 
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url)
@@ -8,10 +9,9 @@ export async function GET(request: Request) {
 
   if (code) {
     const supabase = await NewSSRSassClient()
-    const client = supabase.Supabase()
+    const client = supabase.SupabaseClient()
 
-    // Exchange the code for a session
-    await supabase.exchangeCodeForSession(code)
+    await new AuthStore(supabase).ExchangeCodeForSession(code)
 
     // Check MFA status
     const { data: aal, error: aalError } = await client.auth.mfa.getAuthenticatorAssuranceLevel()
