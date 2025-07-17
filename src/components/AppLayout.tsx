@@ -18,6 +18,10 @@ import {
   CookingPot,
   StoreIcon,
   ListOrderedIcon,
+  LucideBook,
+  LucideBugPlay,
+  LucideActivity,
+  LucideUser,
 } from 'lucide-react';
 import { UseUserContext } from "@/lib/context/GlobalContext";
 import { NewSPASassClient } from "@/lib/supabase/client";
@@ -35,13 +39,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const navigation = [
     { name: 'Dashbaord', href: '/app', icon: Home },
 
-    { name: 'Raw Materials', href: '/app/materials', icon: ShoppingBasket },
-    { name: 'Recipe', href: '/app/recipe', icon: CookingPot },
-    { name: 'Product Inventory', href: '/app/inventory', icon: StoreIcon },
-    { name: 'Orders', href: '/app/orders', icon: ListOrderedIcon },
+    { name: 'Materials', href: '/app/materials', icon: ShoppingBasket },
+    { name: 'Recipes', href: '/app/recipe', icon: CookingPot },
+    { name: 'Products', href: '/app/inventory', icon: StoreIcon },
+    { name: 'Orders', href: '/app/orders', icon: LucideActivity },
 
-    { name: 'Profile', href: '/app/profile', icon: User },
+    { name: 'Profile', href: '/app/profile', icon: LucideUser },
     { name: 'Support', href: '/app/support', icon: LucideHeartPulse },
+    { name: 'Documentation', href: '/docs/documentation', icon: LucideBook },
     { name: 'Lanidng Page', href: '/', icon: DoorOpen },
   ];
 

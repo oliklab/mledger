@@ -35,6 +35,8 @@ export type Database = {
   public: {
     Tables: {
       profiles: {}
+      materials: {}
+      material_purchases: {}
       todo_list: {
         Row: {
           created_at: string

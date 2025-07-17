@@ -41,6 +41,19 @@ export class AuthStore {
     throw 'error: user profile not found';
   }
 
+  async GetAuthenticatedUserId(): Promise<string> {
+    // Get user data
+    const { data: { user: authUser }, error: authErr } = await this.store.SupabaseClient().auth.getUser();
+
+    // Handle both network errors and the case where no user is found
+    if (authErr || !authUser) {
+      throw new Error("Authentication error: No user is currently signed in.");
+    }
+
+    // If we reach this point, we know authUser is not null, so we can safely return the ID.
+    return authUser.id;
+  }
+
   async LoginWithEmail() {
     return this.store.SupabaseClient().auth.signInWithPassword({
       email: this.model.email,

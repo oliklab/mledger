@@ -1,5 +1,4 @@
 import { SaasClient } from "@/lib/supabase/saas";
-import { NewSSRSassClient } from "@/lib/supabase/server";
 
 export type UserProfile = {
   id: string;
