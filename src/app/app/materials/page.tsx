@@ -306,7 +306,7 @@ export default function MaterialsPage() {
 // Add New Material Button and Dialog.
 // Define props for the component
 interface CreateMaterialDialogProps {
-  onMaterialCreated: () => void; // Callback to refresh the materials list
+  onMaterialCreated: () => Promise<void>; // Callback to refresh the materials list
 }
 
 // Use a type for the form state. It's similar to Material but uses strings for inputs.
@@ -333,7 +333,7 @@ const initialFormState: MaterialFormState = {
   notes: '',
 };
 
-export function CreateMaterialDialog({ onMaterialCreated }: CreateMaterialDialogProps) {
+function CreateMaterialDialog({ onMaterialCreated }: CreateMaterialDialogProps) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -429,7 +429,7 @@ export function CreateMaterialDialog({ onMaterialCreated }: CreateMaterialDialog
           </Alert>
         )}
 
-        <div className="space-y-8">
+        <form onSubmit={handleCreateMaterial} className="space-y-8">
           <div className="space-y-4">
             <Label htmlFor="name" className="text-base font-semibold text-slate-700 flex items-center gap-2">
               Material Name
@@ -591,7 +591,6 @@ export function CreateMaterialDialog({ onMaterialCreated }: CreateMaterialDialog
 
           <div className="flex justify-end pt-8 border-t-2 border-slate-100">
             <Button
-              onClick={handleCreateMaterial}
               disabled={loading}
               className="bg-primary-600 text-white hover:bg-primary-700 shadow-lg hover:shadow-xl transition-all duration-200 px-8 py-3 text-base font-semibold rounded-lg"
             >
@@ -599,7 +598,7 @@ export function CreateMaterialDialog({ onMaterialCreated }: CreateMaterialDialog
               {loading ? 'Saving Material...' : 'Save Material'}
             </Button>
           </div>
-        </div>
+        </form>
       </DialogContent>
     </Dialog>
   );
