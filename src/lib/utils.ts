@@ -15,3 +15,12 @@ export function generateRandomString(length = 8, charset = 'ABCDEFGHIJKLMNOPQRST
 
   return result;
 }
+
+export function FormatCurrency(amount: number) {
+  return new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'USD', currencyDisplay: 'narrowSymbol' }).format(amount);
+}
+
+export function FormatDate(dateString: string) {
+  return new Date(dateString).toLocaleDateString('en-IE', { day: '2-digit', month: 'long', year: 'numeric' });
+}
+

@@ -49,13 +49,17 @@ export class MaterialStore {
     const { data: data, error: err } = await this.store.SupabaseClient()
       .from('materials')
       .select('*')
-      .eq('user_id', await this.auth.GetAuthenticatedUserId());
+      .eq('user_id', await this.auth.GetAuthenticatedUserId())
+      .order('updated_at', { ascending: false });
 
     if (err) throw err;
     return data;
   }
 
   async Create(model: Material) {
+    if (model.minimum_threshold < 0) {
+      model.minimum_threshold = 0;
+    }
     const { data: data, error: err } = await this.store.SupabaseClient()
       .from('materials')
       .insert(model);
@@ -67,7 +71,21 @@ export class MaterialStore {
   async Update(model: Material) {
     const { data: data, error: err } = await this.store.SupabaseClient()
       .from('materials')
-      .update(model)
+      .update({
+        name: model.name,
+        purchase_unit: model.purchase_unit,
+        crafting_unit: model.crafting_unit,
+        conversion_factor: model.conversion_factor,
+        total_cost: model.total_cost,
+        total_quantity: model.total_quantity,
+        unit_price: model.unit_price,
+        current_stock: model.current_stock,
+        minimum_threshold: model.minimum_threshold,
+        notes: model.notes,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', model.id)
+      .eq('user_id', await this.auth.GetAuthenticatedUserId());
 
     if (err) throw err;
     return data;
