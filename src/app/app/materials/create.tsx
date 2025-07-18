@@ -25,6 +25,7 @@ import {
   Calculator,
   ShoppingCart,
   StickyNote,
+  LucideDollarSign,
 } from 'lucide-react';
 import { Material, MaterialStore } from '@/storage/materials';
 import { Label } from '@/components/ui/label';
@@ -266,7 +267,7 @@ export function CreateMaterialDialog({ onMaterialCreated }: CreateMaterialDialog
 
             <div className="space-y-4">
               <Label htmlFor="total_cost" className="text-base font-semibold text-slate-700 flex items-center gap-2">
-                <Euro className="h-4 w-4" />
+                <LucideDollarSign className="h-4 w-4" />
                 Total Initial Cost of Purchase Quantity
                 <span className="text-red-500">*</span>
               </Label>

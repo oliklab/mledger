@@ -10,6 +10,8 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from "@/hooks/use-toast";
+import { CreatePurchaseDialog } from './purchase_create';
+import { EditPurchaseDialog } from './purchase_edit';
 import {
   Loader2,
   Package,
@@ -24,12 +26,17 @@ import {
   Ruler,
   AlertTriangle,
   History,
-  Info
+  Info,
+  Plus,
+  LucideWalletCards,
+  LucideClock
 } from 'lucide-react';
 import { ConfirmDeleteDialog } from "@/components/ConfirmDelete";
 import { EditMaterialDialog } from './edit_dialog';
 import { FormatCurrency, FormatDate } from '@/lib/utils';
-
+import { PurchaseHistoryList } from './purchase_history';
+import { MaterialPurchase, MaterialPurchaseStore } from '@/storage/material_purchases';
+import { IsThisMonth } from '@/lib/utils';
 
 // A small component for displaying stats
 const StatCard = ({ title, value, icon: Icon, description, alert }: { title: string, value: string | number, icon: React.ElementType, description?: string, alert?: string }) => (
@@ -64,31 +71,84 @@ export default function MaterialDetailsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
+  const [selectedPurchase, setSelectedPurchase] = useState<MaterialPurchase | null>(null);
+  const [isEditPurchaseDialogOpen, setIsEditPurchaseDialogOpen] = useState(false);
+  const [isDeletePurchaseDialogOpen, setIsDeletePurchaseDialogOpen] = useState(false);
+  const [isDeletingPurchase, setIsDeletingPurchase] = useState(false);
+
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const loadMaterial = useCallback(async () => {
+  const [purchases, setPurchases] = useState<MaterialPurchase[]>([]);
+  const [isCreatePurchaseDialogOpen, setIsCreatePurchaseDialogOpen] = useState(false);
+
+  const loadMaterialAndPurchases = useCallback(async () => {
     if (!id) return;
     setLoading(true);
     try {
       const supabase = await NewSPASassClient();
-      const data = await new MaterialStore(supabase).Read(id);
-      if (data) {
-        setMaterial(data);
+      // Fetch material and purchases in parallel for efficiency
+      const [materialData, purchasesData] = await Promise.all([
+        new MaterialStore(supabase).Read(id),
+        new MaterialPurchaseStore(supabase).ReadAllForMaterial(id)
+      ]);
+
+      if (materialData) {
+        setMaterial(materialData);
+        setPurchases(purchasesData);
       } else {
         setError('Material not found.');
       }
     } catch (err: any) {
-      setError('Failed to load material: ' + err.message);
+      setError('Failed to load material data: ' + err.message);
     } finally {
       setLoading(false);
     }
   }, [id]);
 
+  const handlePurchaseCreated = async () => {
+    await loadMaterialAndPurchases();
+    toast({
+      title: "Purchase Logged",
+      description: "The material stock and average cost have been updated successfully.",
+    });
+  };
+
+  const handleOpenEditPurchaseDialog = (purchase: MaterialPurchase) => {
+    setSelectedPurchase(purchase);
+    setIsEditPurchaseDialogOpen(true);
+  };
+
+  const handleOpenDeletePurchaseDialog = (purchase: MaterialPurchase) => {
+    setSelectedPurchase(purchase);
+    setIsDeletePurchaseDialogOpen(true);
+  };
+
+  const handlePurchaseUpdated = async () => {
+    await loadMaterialAndPurchases();
+    toast({ title: "Purchase Updated", description: "The purchase record has been updated." });
+  };
+
+  const handleConfirmDeletePurchase = async () => {
+    if (!selectedPurchase) return;
+    setIsDeletingPurchase(true);
+    try {
+      const supabase = await NewSPASassClient();
+      await new MaterialPurchaseStore(supabase).Delete(selectedPurchase.id);
+      await loadMaterialAndPurchases();
+      toast({ title: "Purchase Deleted", description: "The purchase record has been removed." });
+      setIsDeletePurchaseDialogOpen(false);
+    } catch (err: any) {
+      toast({ variant: "destructive", title: "Error", description: `Failed to delete purchase: ${err.message}` });
+    } finally {
+      setIsDeletingPurchase(false);
+    }
+  };
+
   useEffect(() => {
-    loadMaterial();
-  }, [loadMaterial]);
+    loadMaterialAndPurchases();
+  }, [loadMaterialAndPurchases]);
 
   useEffect(() => {
     if (searchParams.get('edit') === 'true' && material) {
@@ -99,7 +159,7 @@ export default function MaterialDetailsPage() {
   }, [searchParams, material, router, pathname]);
 
   const handleUpdateSuccess = async (updatedMaterialName: string) => {
-    await loadMaterial(); // Refresh the data
+    await loadMaterialAndPurchases(); // Refresh the data
     // Show the success toast
     toast({
       title: "Material Updated",
@@ -133,6 +193,20 @@ export default function MaterialDetailsPage() {
     if (!material) return 0;
     return material.current_stock * material.avg_cost;
   }, [material]);
+
+  const purchaseCostThisMonth = useMemo(() => {
+    if (!purchases) return 0;
+    return purchases
+      .filter(m => IsThisMonth(m.purchase_date))
+      .reduce((sum, m) => sum + m.total_cost, 0);
+  }, [purchases]);
+
+  const purchaseCountThisMonth = useMemo(() => {
+    if (!purchases) return 0;
+    return purchases
+      .filter(m => IsThisMonth(m.purchase_date))
+      .length;
+  }, [purchases]);
 
   if (loading) {
     return (
@@ -188,6 +262,38 @@ export default function MaterialDetailsPage() {
         isDeleting={isDeleting}
       />
 
+      <CreatePurchaseDialog
+        isOpen={isCreatePurchaseDialogOpen}
+        onOpenChange={setIsCreatePurchaseDialogOpen}
+        materialId={material.id}
+        materialName={material.name}
+        craftingUnit={material.crafting_unit}
+        onPurchaseCreated={handlePurchaseCreated}
+        purchaseUnit={material.purchase_unit}
+        conversionFactor={material.conversion_factor}
+      />
+
+      {material && (
+        <EditPurchaseDialog
+          isOpen={isEditPurchaseDialogOpen}
+          onOpenChange={setIsEditPurchaseDialogOpen}
+          onPurchaseUpdated={handlePurchaseUpdated}
+          purchase={selectedPurchase}
+          materialName={material.name}
+          purchaseUnit={material.purchase_unit}
+          conversionFactor={material.conversion_factor}
+        />
+      )}
+
+      <ConfirmDeleteDialog
+        isOpen={isDeletePurchaseDialogOpen}
+        onOpenChange={setIsDeletePurchaseDialogOpen}
+        onConfirm={handleConfirmDeletePurchase}
+        itemName={`the purchase from ${FormatDate(selectedPurchase?.purchase_date || '')}`}
+        isDeleting={isDeletingPurchase}
+      />
+
+
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
@@ -198,6 +304,10 @@ export default function MaterialDetailsPage() {
           <h1 className="text-3xl font-bold tracking-tight text-gray-900">{material.name}</h1>
         </div>
         <div className="flex items-center gap-2 flex-shrink-0">
+          <Button className="bg-primary-600 text-white hover:bg-primary-700 shadow-lg hover:shadow-xl transition-all duration-200 font-medium" onClick={() => setIsCreatePurchaseDialogOpen(true)}>
+            <Plus className="mr-2 h-4 w-4" />
+            Log Purchase
+          </Button>
           <Button variant="outline" onClick={() => setIsEditDialogOpen(true)}><Edit3 className="mr-2 h-4 w-4" />Edit</Button>
           <Button variant="destructive" onClick={() => setIsDeleteDialogOpen(true)} disabled={loading}>
             <Trash2 className="mr-2 h-4 w-4" />Delete
@@ -206,7 +316,7 @@ export default function MaterialDetailsPage() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid gap-2 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-2 md:grid-cols-2 lg:grid-cols-3">
         <StatCard title="Current Stock"
           value={`${material.current_stock.toLocaleString()} ${material.crafting_unit}`}
           icon={Warehouse}
@@ -214,7 +324,9 @@ export default function MaterialDetailsPage() {
           description={material.current_stock <= material.minimum_threshold ? "" : "Stock is Healthy"}
         />
         <StatCard title="Avg. Cost / Unit" value={FormatCurrency(material.avg_cost)} icon={TrendingDown} description={`per ${material.crafting_unit}`} />
-        <StatCard title="Inventory Value" value={FormatCurrency(inventoryValue)} icon={Wallet} description="Current stock x Avg. cost" />
+        <StatCard title="Current Inventory Value" value={FormatCurrency(inventoryValue)} icon={Wallet} description="Current stock x Avg. cost" />
+        <StatCard title="Purchase Cost This Month" value={FormatCurrency(purchaseCostThisMonth)} icon={LucideWalletCards} description="Total Cost for Purchases this month" />
+        <StatCard title="Purchases This Month" value={purchaseCountThisMonth} icon={LucideClock} description="Purchases this month" />
         <StatCard title="Low Stock Threshold" value={`${material.minimum_threshold > 0 ? `${material.minimum_threshold.toLocaleString()} ${material.crafting_unit}` : 'Not Set'}`} icon={AlertTriangle} />
       </div>
 
@@ -247,6 +359,12 @@ export default function MaterialDetailsPage() {
         </Card>
       </div>
       )}
+
+      <PurchaseHistoryList
+        purchases={purchases}
+        onEdit={handleOpenEditPurchaseDialog}
+        onDelete={handleOpenDeletePurchaseDialog}
+        craftingUnit={material.crafting_unit} />
     </div>
   );
 }

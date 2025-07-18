@@ -1,105 +1,198 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from 'react';
-import { NewSPASassClient } from '@/lib/supabase/client';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
+import React, { useState, useMemo } from 'react';
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
   DialogTrigger,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import {
-  AlertCircle,
-  Loader2,
-  Package,
-  Plus,
-  AlertTriangle,
-  Euro,
-  Scale,
-  Scissors,
-  Calculator,
-  ShoppingCart,
-  StickyNote,
-} from 'lucide-react';
-import { Material, MaterialStore } from '@/storage/materials';
-import { Label } from '@/components/ui/label';
-import { HelpText } from '@/components/ui/help-text';
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Loader2, AlertCircle, LucidePlus, LucideInfo } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Material } from '@/storage/materials';
+import { MaterialPurchaseStore } from '@/storage/material_purchases';
+import { NewSPASassClient } from '@/lib/supabase/client';
 
-interface MaterialDialogProps {
-  onMaterialPurchaseCreated: () => Promise<void>;
+interface CreatePurchaseShortcutDialogProps {
+  isOpen: boolean;
+  onOpenChange: (isOpen: boolean) => void;
+  onPurchaseCreated: () => void;
+  materials: Material[];
 }
 
-export function CreateMaterialPurchaseDialog({ onMaterialPurchaseCreated }: MaterialDialogProps) {
-  const [open, setOpen] = useState(false);
+export function CreatePurchaseShortcutDialog({ isOpen, onOpenChange, onPurchaseCreated, materials }: CreatePurchaseShortcutDialogProps) {
+  const [selectedMaterialId, setSelectedMaterialId] = useState('');
+  const [formData, setFormData] = useState({
+    purchase_date: new Date().toISOString().split('T')[0],
+    total_cost: '',
+    total_quantity: '',
+    supplier_name: '',
+    supplier_contact: '',
+  });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string>('');
+  const [error, setError] = useState('');
 
-  const handleAddTask = async (e: React.FormEvent<HTMLFormElement>) => {
+  const selectedMaterial = useMemo(() =>
+    materials.find(m => m.id === selectedMaterialId),
+    [materials, selectedMaterialId]
+  );
+
+  const resetForm = () => {
+    setSelectedMaterialId('');
+    setFormData({
+      purchase_date: new Date().toISOString().split('T')[0],
+      total_cost: '',
+      total_quantity: '',
+      supplier_name: '',
+      supplier_contact: '',
+    });
+    setError('');
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    setFormData(prev => ({ ...prev, [id]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!selectedMaterial) {
+      setError('You must select a material.');
+      return;
+    }
+    if (!formData.purchase_date || !formData.total_cost || !formData.total_quantity) {
+      setError('Please fill out all required fields.');
+      return;
+    }
+    setLoading(true);
+    setError('');
+
+    try {
+      const supabase = await NewSPASassClient();
+      const purchaseStore = new MaterialPurchaseStore(supabase);
+
+      await purchaseStore.Create({
+        material_id: selectedMaterial.id,
+        purchase_date: formData.purchase_date,
+        total_cost: parseFloat(formData.total_cost),
+        total_quantity: parseFloat(formData.total_quantity) * selectedMaterial.conversion_factor,
+        supplier_name: formData.supplier_name,
+        supplier_contact: formData.supplier_contact,
+      });
+
+      onPurchaseCreated();
+      onOpenChange(false);
+
+    } catch (err: any) {
+      setError(`Failed to log purchase: ${err.message}`);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={isOpen} onOpenChange={(open) => {
+      if (!open) resetForm();
+      onOpenChange(open);
+    }}>
       <DialogTrigger asChild>
-        <Button className="bg-primary-600 text-white hover:bg-primary-700">
-          <Plus className="h-4 w-4 mr-2" />
-          Add Purchase Record
+        <Button className="bg-primary-600 text-white hover:bg-primary-700 shadow-lg hover:shadow-xl transition-all duration-200 font-medium">
+          <LucidePlus className="h-4 w-4 mr-2" />
+          Add New Purchase
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="sm:max-w-[750px]">
         <DialogHeader>
-          <DialogTitle>Add New Purchase</DialogTitle>
-        </DialogHeader>
-        {error && (
-          <Alert variant="destructive">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
+          <DialogTitle className="text-xl">Log a New Purchase</DialogTitle>
+          <DialogDescription>
+            Select a material and enter the purchase details. This will update its stock.
+          </DialogDescription>
+        </DialogHeader >
+
+        {
+          materials.length === 0 && isOpen && (
+            <Alert variant="default" className="bg-amber-50 border-amber-200">
+              <LucideInfo className="h-4 w-4" />
+              <AlertDescription>
+                You must add a material before you can log a purchase.
+              </AlertDescription>
+            </Alert>
+          )
+        }
+
+        {
+          error && (
+            <Alert variant="destructive" className="my-2">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )
+        }
+
+        {materials.length > 0 && (
+          <>
+            <form id="create-purchase-shortcut-form" onSubmit={handleSubmit} className="grid gap-6 py-4">
+              <div>
+                <Label htmlFor="material-select">Material</Label>
+                <Select onValueChange={setSelectedMaterialId} value={selectedMaterialId}>
+                  <SelectTrigger id="material-select">
+                    <SelectValue placeholder="Select a material..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {materials.map(material => (
+                      <SelectItem key={material.id} value={material.id}>
+                        {material.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {selectedMaterial && (
+                <>
+                  <div>
+                    <Label htmlFor="purchase_date">Date</Label>
+                    <Input id="purchase_date" type="date" value={formData.purchase_date} onChange={handleInputChange} required />
+                  </div>
+                  <div>
+                    <Label htmlFor="total_quantity">Quantity in {selectedMaterial.purchase_unit}</Label>
+                    <Input id="total_quantity" type="number" step="any" placeholder={`e.g., 5 ${selectedMaterial.purchase_unit}`} value={formData.total_quantity} onChange={handleInputChange} required />
+                  </div>
+                  <div>
+                    <Label htmlFor="total_cost">Total Cost (€)</Label>
+                    <Input id="total_cost" type="number" step="any" placeholder="e.g., 50.25" value={formData.total_cost} onChange={handleInputChange} required />
+                  </div>
+                  <div>
+                    <Label htmlFor="supplier_name" className="text-right">Supplier</Label>
+                    <Input id="supplier_name" placeholder="Optional" value={formData.supplier_name} onChange={handleInputChange} className="col-span-3" />
+                  </div>
+                  <div>
+                    <Label htmlFor="supplier_contact" className="text-right">Contact</Label>
+                    <Input id="supplier_contact" placeholder="Optional" value={formData.supplier_contact} onChange={handleInputChange} className="col-span-3" />
+                  </div>
+                </>
+              )}
+            </form>
+
+            <DialogFooter>
+              <DialogClose asChild><Button type="button" variant="outline">Cancel</Button></DialogClose>
+              <Button type="submit" form="create-purchase-shortcut-form" disabled={loading || !selectedMaterial}>
+                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Save Purchase
+              </Button>
+            </DialogFooter>
+          </>
         )}
-        <form onSubmit={handleAddTask} className="space-y-4">
-          <div className="space-y-2">
-            {/* <Input
-              type="text"
-              value={newTaskTitle}
-              onChange={(e) => setNewTaskTitle(e.target.value)}
-              placeholder="Task title"
-              required
-            />
-          </div>
-          <div className="space-y-2">
-            <Textarea
-              value={newTaskDescription}
-              onChange={(e) => setNewTaskDescription(e.target.value)}
-              placeholder="Task description (optional)"
-              rows={3}
-            />
-          </div> */}
-            {/* <div className="flex items-center justify-between">
-              <label className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  checked={isUrgent}
-                  onChange={(e) => setIsUrgent(e.target.checked)}
-                  className="rounded border-gray-300 focus:ring-primary-500"
-                />
-                <span className="text-sm">Mark as urgent</span>
-              </label> */}
-            <Button
-              type="submit"
-              disabled={loading}
-              className="bg-primary-600 text-white hover:bg-primary-700"
-            >
-              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Create Task
-            </Button>
-          </div>
-        </form>
-      </DialogContent>
-    </Dialog>
+
+      </DialogContent >
+    </Dialog >
   );
 }

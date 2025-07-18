@@ -24,3 +24,10 @@ export function FormatDate(dateString: string) {
   return new Date(dateString).toLocaleDateString('en-IE', { day: '2-digit', month: 'long', year: 'numeric' });
 }
 
+export function IsThisMonth(dateString: string): boolean {
+  const now = new Date();
+  // Use Date.UTC() to specify the date components in universal time
+  const startOfMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
+  return dateString >= startOfMonth.toISOString().slice(0, 10)
+
+}

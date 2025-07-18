@@ -34,7 +34,7 @@ export function ConfirmDeleteDialog({
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete the material
+            This action cannot be undone. This will permanently delete
             <strong className="px-1">{itemName}</strong>
             and all of its associated data.
           </AlertDialogDescription>

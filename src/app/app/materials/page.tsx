@@ -26,9 +26,11 @@ import {
   LucideLandmark,
   ViewIcon,
   SquareChartGantt,
-  LucideEye
+  LucideEye,
+  LucideClock12
 } from 'lucide-react';
 import { Material, MaterialStore } from '@/storage/materials';
+import { MaterialPurchase, MaterialPurchaseStore } from '@/storage/material_purchases';
 import { AnalyticsCard } from '@/components/AnalyticsCard';
 import {
   Tooltip,
@@ -38,8 +40,8 @@ import {
 } from '@/components/ui/tooltip';
 import Link from 'next/link';
 import { CreateMaterialDialog } from './create';
-import { CreateMaterialPurchaseDialog } from './create_purchase';
-import { FormatCurrency, FormatDate } from '@/lib/utils';
+import { CreatePurchaseShortcutDialog } from './create_purchase';
+import { FormatCurrency, FormatDate, IsThisMonth } from '@/lib/utils';
 
 
 export default function MaterialsPage() {
@@ -49,12 +51,15 @@ export default function MaterialsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [materials, setMaterials] = useState<Material[]>([]);
+  const [purchases, setPurchases] = useState<MaterialPurchase[]>([]);
   const [showLowStock, setShowLowStock] = useState(false);
+  const [isPurchaseShortcutOpen, setIsPurchaseShortcutOpen] = useState(false);
 
   const itemsPerPage = 20;
 
   useEffect(() => {
     loadAllMaterials();
+    loadAllPurchases();
   }, []);
 
   const loadAllMaterials = async () => {
@@ -72,26 +77,42 @@ export default function MaterialsPage() {
     }
   };
 
+  const loadAllPurchases = async () => {
+    try {
+      if (!initialLoading) setLoading(true); else setInitialLoading(true);
+      const supabase = await NewSPASassClient();
+      const parchasesData = await new MaterialPurchaseStore(supabase).ReadAllForUserId();
+      setPurchases(parchasesData);
+    } catch (err: any) {
+      setError('Failed to load Purchases: ' + err.message);
+      console.error('Error loading Materials:', err);
+    } finally {
+      setLoading(false);
+      setInitialLoading(false);
+    }
+  };
+
   // Memoized analytics calculations to prevent re-computing on every render
   const analytics = useMemo(() => {
-    const now = new Date();
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-
     const lowStockCount = materials.filter(m => m.current_stock <= m.minimum_threshold).length;
     const totalInventoryValue = materials.reduce((sum, m) => sum + (m.current_stock * m.avg_cost), 0);
-    const investmentThisMonth = materials
-      .filter(m => new Date(m.created_at) >= startOfMonth)
+    const investmentThisMonth = purchases
+      .filter(m => IsThisMonth(m.purchase_date))
       .reduce((sum, m) => sum + m.total_cost, 0);
+
     const totalInvestment = materials.reduce((sum, m) => sum + m.total_cost, 0);
+    const totalPurchasesThisMonth = purchases.filter(m => IsThisMonth(m.purchase_date))
+      .length;
 
     return {
       totalMaterials: materials.length,
       lowStockCount,
       totalInventoryValue,
-      investmentThisMonth,
-      totalInvestment
+      investmentThisMonth: investmentThisMonth,
+      totalInvestment,
+      totalPurchasesThisMonth
     };
-  }, [materials]);
+  }, [materials, purchases]);
 
   const filteredMaterials = materials.filter(material => {
     const searchLower = searchTerm.toLowerCase();
@@ -233,7 +254,12 @@ export default function MaterialsPage() {
       </div>
       <div className="flex items-center shrink-0 gap-2 mt-4 md:mt-0">
         <CreateMaterialDialog onMaterialCreated={loadAllMaterials} />
-        <CreateMaterialPurchaseDialog onMaterialPurchaseCreated={loadAllMaterials} />
+        <CreatePurchaseShortcutDialog
+          isOpen={isPurchaseShortcutOpen}
+          onOpenChange={setIsPurchaseShortcutOpen}
+          materials={materials}
+          onPurchaseCreated={loadAllMaterials}
+        />
       </div>
       <div className='p-6'>
         {error && (
@@ -259,11 +285,12 @@ export default function MaterialsPage() {
       <PageHeader />
 
       {/* Analytics Bar */}
-      <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-5">
+      <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
         <AnalyticsCard title="Total Materials" value={analytics.totalMaterials.toString()} icon={Boxes} description="Distinct raw materials you track" />
         <AnalyticsCard title="Low Stock Items" value={analytics.lowStockCount.toString()} icon={AlertTriangle} description="Items at or below threshold" />
         <AnalyticsCard title="Current Inventory Value" value={FormatCurrency(analytics.totalInventoryValue)} icon={Wallet} description="Current value of all stock on hand" />
         <AnalyticsCard title="Investment This Month" value={FormatCurrency(analytics.investmentThisMonth)} icon={CalendarClock} description="Cost of new materials added this month" />
+        <AnalyticsCard title="Total Purchases This Month" value={analytics.totalPurchasesThisMonth.toString()} icon={LucideClock12} description="Total Purchases made this month" />
         <AnalyticsCard title="Total Investment" value={FormatCurrency(analytics.totalInvestment)} icon={LucideLandmark} description="Total Cost of materials for all time" />
       </div>
 
