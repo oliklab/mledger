@@ -35,7 +35,7 @@ type CreateWithItemsPayload = {
   }[];
 };
 
-export class PurchasesStore {
+export class PurchaseStore {
   private store: SaasClient;
   private auth: AuthStore;
 

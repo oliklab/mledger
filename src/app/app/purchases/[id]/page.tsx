@@ -6,7 +6,7 @@ import Link from 'next/link';
 
 // Supabase and Storage
 import { NewSPASassClient } from '@/lib/supabase/client';
-import { PurchaseMetadata, PurchasesStore } from '@/storage/purchases';
+import { PurchaseMetadata, PurchaseStore } from '@/storage/purchases';
 import { Material, MaterialStore } from '@/storage/materials';
 import { MaterialPurchase, MaterialPurchaseStore } from '@/storage/material_purchases';
 
@@ -79,7 +79,7 @@ export default function PurchaseDetailsPage() {
       setLoading(true);
       const supabase = await NewSPASassClient();
       const [metaData, materialsData] = await Promise.all([
-        new PurchasesStore(supabase).ReadMetadata(id),
+        new PurchaseStore(supabase).ReadMetadata(id),
         new MaterialStore(supabase).ReadAll()
       ]);
       setPurchaseMeta(metaData);
@@ -101,7 +101,7 @@ export default function PurchaseDetailsPage() {
     setIsDeletingOrder(true);
     try {
       const supabase = await NewSPASassClient();
-      await new PurchasesStore(supabase).Delete(purchaseMeta.purchase.id);
+      await new PurchaseStore(supabase).Delete(purchaseMeta.purchase.id);
       toast({ title: "Purchase Record Deleted", description: "The Purchase and it's items have been removed." });
       router.push('/app/purchases');
     } catch (err: any) {

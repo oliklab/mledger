@@ -4,7 +4,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import { NewSPASassClient } from '@/lib/supabase/client';
-import { PurchasesStore, PurchaseMetadata } from '@/storage/purchases';
+import { PurchaseStore, PurchaseMetadata } from '@/storage/purchases';
 import { Material, MaterialStore } from '@/storage/materials';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -49,7 +49,7 @@ export default function EditPurchasePage() {
     try {
       const supabase = await NewSPASassClient();
       const [purchaseMeta, materialsData] = await Promise.all([
-        new PurchasesStore(supabase).ReadMetadata(purchaseId),
+        new PurchaseStore(supabase).ReadMetadata(purchaseId),
         new MaterialStore(supabase).ReadAll()
       ]);
 
@@ -119,7 +119,7 @@ export default function EditPurchasePage() {
     setLoading(true);
     try {
       const supabase = await NewSPASassClient();
-      const purchaseStore = new PurchasesStore(supabase);
+      const purchaseStore = new PurchaseStore(supabase);
 
       const itemsPayload = lineItems.map(item => {
         const material = availableMaterials.find(m => m.id === item.materialId);

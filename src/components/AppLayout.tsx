@@ -22,6 +22,7 @@ import {
   LucideBugPlay,
   LucideActivity,
   LucideUser,
+  LucideListChecks,
 } from 'lucide-react';
 import { UseUserContext } from "@/lib/context/GlobalContext";
 import { NewSPASassClient } from "@/lib/supabase/client";
@@ -40,8 +41,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     { name: 'Dashbaord', href: '/app', icon: Home },
 
     { name: 'Materials', href: '/app/materials', icon: ShoppingBasket },
-    { name: 'Purchases', href: '/app/purchases', icon: LucideBook },
-    { name: 'Recipes', href: '/app/recipe', icon: CookingPot },
+    { name: 'Purchases', href: '/app/purchases', icon: LucideListChecks },
+    { name: 'Recipes', href: '/app/recipes', icon: CookingPot },
     { name: 'Products', href: '/app/inventory', icon: StoreIcon },
     { name: 'Orders', href: '/app/orders', icon: LucideActivity },
 

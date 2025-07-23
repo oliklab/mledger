@@ -6,7 +6,7 @@ import Link from 'next/link';
 
 // Supabase and Storage
 import { NewSPASassClient } from '@/lib/supabase/client';
-import { PurchasesStore } from '@/storage/purchases';
+import { PurchaseStore } from '@/storage/purchases';
 import { Material, MaterialStore } from '@/storage/materials';
 
 // UI Components
@@ -117,7 +117,7 @@ export default function NewPurchasePage() {
 
     try {
       const supabase = await NewSPASassClient();
-      const purchaseStore = new PurchasesStore(supabase);
+      const purchaseStore = new PurchaseStore(supabase);
 
       const itemsPayload = lineItems.map(item => {
         const material = availableMaterials.find(m => m.id === item.materialId);
@@ -203,7 +203,10 @@ export default function NewPurchasePage() {
                 <div key={item.id} className="p-4 border rounded-lg bg-slate-50 space-y-4">
                   <div className="grid grid-cols-12 gap-4 items-end">
                     <div className="col-span-12 md:col-span-5 space-y-1"><Label>Material</Label><Select onValueChange={(value) => handleItemChange(item.id, 'materialId', value)} value={item.materialId}><SelectTrigger><SelectValue placeholder="Select a material..." /></SelectTrigger><SelectContent>{availableMaterials.map(m => <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>)}</SelectContent></Select></div>
-                    <div className="col-span-6 md:col-span-3 space-y-1"><Label>Quantity ({selectedMaterial?.purchase_unit || '...'})</Label><Input type="number" placeholder="e.g., 5" value={item.quantity} onChange={(e) => handleItemChange(item.id, 'quantity', e.target.value)} /></div>
+                    <div className="col-span-6 md:col-span-3 space-y-1">
+                      <Label>Quantity in ({selectedMaterial?.purchase_unit || '...'})</Label>
+                      <Input type="number" placeholder="e.g., 5" value={item.quantity} onChange={(e) => handleItemChange(item.id, 'quantity', e.target.value)} />
+                    </div>
                     <div className="col-span-6 md:col-span-3 space-y-1"><Label>Item Cost</Label><Input type="number" placeholder="e.g., 25.50" value={item.cost} onChange={(e) => handleItemChange(item.id, 'cost', e.target.value)} /></div>
                     <div className="col-span-12 md:col-span-1 flex justify-end"><Button type="button" variant="ghost" size="icon" onClick={() => handleRemoveItem(item.id)} disabled={lineItems.length <= 1}><Trash2 className="h-4 w-4 text-destructive" /></Button></div>
                   </div>

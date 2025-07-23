@@ -6,7 +6,7 @@ import Link from 'next/link';
 
 // Supabase and Storage
 import { NewSPASassClient } from '@/lib/supabase/client';
-import { PurchaseMetadata, PurchasesStore, Purchase } from '@/storage/purchases'; // Assuming new purchase store
+import { PurchaseMetadata, PurchaseStore, Purchase } from '@/storage/purchases'; // Assuming new purchase store
 import { Material, MaterialStore } from '@/storage/materials'; // Needed for name lookups
 
 // UI Components
@@ -64,7 +64,7 @@ export default function PurchasesListPage() {
     try {
       const supabase = await NewSPASassClient();
       const [purchasesData, materialsData] = await Promise.all([
-        new PurchasesStore(supabase).ReadAllWithMetadata(), // Assuming this method exists
+        new PurchaseStore(supabase).ReadAllWithMetadata(), // Assuming this method exists
         new MaterialStore(supabase).ReadAll()
       ]);
       setPurchases(purchasesData);
@@ -128,7 +128,7 @@ export default function PurchasesListPage() {
     setIsProcessing(true);
     try {
       const supabase = await NewSPASassClient();
-      await new PurchasesStore(supabase).Delete(selectedPurchaseId);
+      await new PurchaseStore(supabase).Delete(selectedPurchaseId);
       toast({ title: "Purchase record Deleted", description: "The purchase record has been removed." });
       loadData(); // Refresh data
       setIsDeleteDialogOpen(false);
