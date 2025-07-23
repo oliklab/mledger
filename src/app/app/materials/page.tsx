@@ -27,7 +27,8 @@ import {
   ViewIcon,
   SquareChartGantt,
   LucideEye,
-  LucideClock12
+  LucideClock12,
+  LucidePlus
 } from 'lucide-react';
 import { Material, MaterialStore } from '@/storage/materials';
 import { MaterialPurchase, MaterialPurchaseStore } from '@/storage/material_purchases';
@@ -40,8 +41,8 @@ import {
 } from '@/components/ui/tooltip';
 import Link from 'next/link';
 import { CreateMaterialDialog } from './create';
-import { CreatePurchaseShortcutDialog } from './create_purchase';
 import { FormatCurrency, FormatDate, IsThisMonth } from '@/lib/utils';
+import { useRouter } from 'next/navigation';
 
 
 export default function MaterialsPage() {
@@ -53,7 +54,7 @@ export default function MaterialsPage() {
   const [materials, setMaterials] = useState<Material[]>([]);
   const [purchases, setPurchases] = useState<MaterialPurchase[]>([]);
   const [showLowStock, setShowLowStock] = useState(false);
-  const [isPurchaseShortcutOpen, setIsPurchaseShortcutOpen] = useState(false);
+  const router = useRouter();
 
   const itemsPerPage = 20;
 
@@ -92,6 +93,11 @@ export default function MaterialsPage() {
     }
   };
 
+  const handelAddNewPurchase = () => {
+    router.push('/app/purchases/new');
+  };
+
+
   // Memoized analytics calculations to prevent re-computing on every render
   const analytics = useMemo(() => {
     const lowStockCount = materials.filter(m => m.current_stock <= m.minimum_threshold).length;
@@ -117,7 +123,8 @@ export default function MaterialsPage() {
   const filteredMaterials = materials.filter(material => {
     const searchLower = searchTerm.toLowerCase();
     const matchesSearch = material.name.toLowerCase().includes(searchLower) ||
-      (material.notes && material.notes.toLowerCase().includes(searchLower));
+      (material.notes && material.notes.toLowerCase().includes(searchLower)) ||
+      (material.sku && material.sku.toLowerCase().includes(searchLower));
     const matchesLowStock = !showLowStock || (material.current_stock <= material.minimum_threshold && material.minimum_threshold > 0);
     return matchesSearch && matchesLowStock;
   });
@@ -140,7 +147,7 @@ export default function MaterialsPage() {
               <div className="flex-1">
                 <div className="flex items-center gap-2">
                   <Link href={`/app/materials/${material.id}`}>
-                    <h3 className="text-lg font-semibold text-slate-800 truncate">{material.name}</h3>
+                    <h3 className="text-lg font-semibold text-slate-800 truncate">{material.sku}: {material.name}</h3>
                   </Link>
                   {material.current_stock <= material.minimum_threshold && (
                     <div className="px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full flex items-center gap-1">
@@ -254,12 +261,10 @@ export default function MaterialsPage() {
       </div>
       <div className="flex items-center shrink-0 gap-2 mt-4 md:mt-0">
         <CreateMaterialDialog onMaterialCreated={loadAllMaterials} />
-        <CreatePurchaseShortcutDialog
-          isOpen={isPurchaseShortcutOpen}
-          onOpenChange={setIsPurchaseShortcutOpen}
-          materials={materials}
-          onPurchaseCreated={loadAllMaterials}
-        />
+        <Button onClick={handelAddNewPurchase} className="bg-primary-600 text-white hover:bg-primary-700 shadow-lg hover:shadow-xl transition-all duration-200 font-medium">
+          <LucidePlus className="h-4 w-4 mr-2" />
+          Add New Purchase
+        </Button>
       </div>
       <div className='p-6'>
         {error && (

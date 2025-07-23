@@ -44,6 +44,7 @@ type EditMaterialFormState = {
   conversion_factor: string;
   minimum_threshold: string;
   notes: string;
+  sku: string
 };
 
 export function EditMaterialDialog({ material, isOpen, onOpenChange, onMaterialUpdated }: EditMaterialDialogProps) {
@@ -53,7 +54,8 @@ export function EditMaterialDialog({ material, isOpen, onOpenChange, onMaterialU
     crafting_unit: '',
     conversion_factor: '1',
     minimum_threshold: '0',
-    notes: ''
+    notes: '',
+    sku: ''
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -68,6 +70,7 @@ export function EditMaterialDialog({ material, isOpen, onOpenChange, onMaterialU
         conversion_factor: String(material.conversion_factor),
         minimum_threshold: String(material.minimum_threshold),
         notes: material.notes || '',
+        sku: material.sku,
       });
     }
   }, [material, isOpen]);
@@ -141,6 +144,10 @@ export function EditMaterialDialog({ material, isOpen, onOpenChange, onMaterialU
           <div className="space-y-3">
             <Label htmlFor="name" className="text-base font-semibold text-slate-700">Material Name <span className="text-red-500">*</span></Label>
             <Input id="name" value={formData.name} onChange={handleInputChange} required className="text-base py-3 px-4" />
+          </div>
+          <div className="space-y-3">
+            <Label htmlFor="sku" className="text-base font-semibold text-slate-700">Material Name <span className="text-red-500">*</span></Label>
+            <Input id="sku" value={formData.sku} onChange={handleInputChange} required className="text-base py-3 px-4" />
           </div>
 
           <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>

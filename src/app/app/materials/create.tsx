@@ -26,6 +26,7 @@ import {
   ShoppingCart,
   StickyNote,
   LucideDollarSign,
+  LucideTablet,
 } from 'lucide-react';
 import { Material, MaterialStore } from '@/storage/materials';
 import { Label } from '@/components/ui/label';
@@ -47,6 +48,13 @@ type MaterialFormState = {
   total_quantity: string;
   minimum_threshold: string;
   notes: string;
+
+  sku: string,
+  initial_cost: string,
+  initial_quantity: string,
+  status: string,
+  category: string,
+  inventoryable: string,
 };
 
 // Define the initial state for the form
@@ -59,6 +67,12 @@ const initialFormState: MaterialFormState = {
   total_quantity: '',
   minimum_threshold: '',
   notes: '',
+  sku: '',
+  initial_cost: '',
+  initial_quantity: '',
+  status: '',
+  category: '',
+  inventoryable: '',
 };
 
 export function CreateMaterialDialog({ onMaterialCreated }: CreateMaterialDialogProps) {
@@ -86,7 +100,12 @@ export function CreateMaterialDialog({ onMaterialCreated }: CreateMaterialDialog
     setError(null);
 
     // --- Validation ---
-    if (!formData.name || !formData.purchase_unit || !formData.crafting_unit || !formData.conversion_factor || !formData.total_cost || !formData.total_quantity) {
+    if (!formData.name ||
+      !formData.purchase_unit ||
+      !formData.crafting_unit ||
+      !formData.conversion_factor ||
+      !formData.total_cost ||
+      !formData.total_quantity) {
       setError('Please fill out all required fields.');
       return;
     }
@@ -105,9 +124,14 @@ export function CreateMaterialDialog({ onMaterialCreated }: CreateMaterialDialog
     try {
       const payload = {
         name: formData.name,
+        sku: formData.sku,
+        status: formData.status,
+        category: formData.category,
         purchase_unit: formData.purchase_unit,
         crafting_unit: formData.crafting_unit,
         conversion_factor: conversionNum,
+        initial_cost: costNum,
+        initial_quantity: quantityNum,
         total_cost: costNum,
         total_quantity: quantityNum,
         current_stock: quantityNum,
@@ -175,6 +199,22 @@ export function CreateMaterialDialog({ onMaterialCreated }: CreateMaterialDialog
             />
           </div>
 
+          <div className="space-y-4">
+            <Label htmlFor="sku" className="text-base font-semibold text-slate-700 flex items-center gap-2">
+              Material SKU
+              <span className="text-red-500">*</span>
+            </Label>
+            <Input
+              id="sku"
+              type="text"
+              value={formData.sku}
+              onChange={handleInputChange}
+              placeholder="Example: SOY-WAX"
+              required
+              className="text-base py-3 px-4 rounded-lg border-2 border-slate-200 focus:ring-4 focus:ring-primary-100 transition-all duration-200"
+            />
+          </div>
+
           <div className='grid grid-cols-2 md:grid-cols-2 gap-6'>
             <div className="space-y-4">
               <Label htmlFor="purchase_unit" className="text-base font-semibold text-slate-700 flex items-center gap-2">
@@ -225,16 +265,25 @@ export function CreateMaterialDialog({ onMaterialCreated }: CreateMaterialDialog
               Unit Conversion Factor
               <span className="text-red-500">*</span>
             </Label>
-            <Input
-              id="conversion_factor"
-              type="number"
-              step="any"
-              value={formData.conversion_factor}
-              onChange={handleInputChange}
-              placeholder="Example: 1, 1000, 100"
-              required
-              className="text-base py-3 px-4 rounded-lg border-2 border-slate-200 focus:ring-4 focus:ring-primary-100 transition-all duration-200"
-            />
+
+            <div className="flex items-center gap-2">
+              <div className="text-base font-semibold text-slate-700">
+                1 {formData.purchase_unit} =
+              </div>
+              <Input
+                id="conversion_factor"
+                type="number"
+                step="any"
+                value={formData.conversion_factor}
+                onChange={handleInputChange}
+                placeholder="Example: 1, 1000, 100"
+                required
+                className="w-80 text-base rounded-lg border-2 border-slate-200 focus:ring-4 focus:ring-primary-100 transition-all duration-200"
+              />
+              <div className="text-base font-semibold text-slate-700">
+                {formData.crafting_unit}
+              </div>
+            </div>
             <HelpText variant='warning'>
               How many Crafting unit fit in one purchase unit?
               For example, if purchase unit is 1 kg, the crafting unit is 1000g, enter 1000 here; or 1 roll = 50 cm, enter 50. <br />
@@ -247,7 +296,7 @@ export function CreateMaterialDialog({ onMaterialCreated }: CreateMaterialDialog
             <div className="space-y-4">
               <Label htmlFor="total_quantity" className="text-base font-semibold text-slate-700 flex items-center gap-2">
                 <ShoppingCart className="h-4 w-4" />
-                Initial Purchase Quantity in Crafting Unit
+                Starting Quantity in Crafting Unit
                 <span className="text-red-500">*</span>
               </Label>
               <Input
@@ -268,7 +317,7 @@ export function CreateMaterialDialog({ onMaterialCreated }: CreateMaterialDialog
             <div className="space-y-4">
               <Label htmlFor="total_cost" className="text-base font-semibold text-slate-700 flex items-center gap-2">
                 <LucideDollarSign className="h-4 w-4" />
-                Total Initial Cost of Purchase Quantity
+                Cost of Starting Quantity
                 <span className="text-red-500">*</span>
               </Label>
               <Input

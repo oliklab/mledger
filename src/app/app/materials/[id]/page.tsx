@@ -10,7 +10,6 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from "@/hooks/use-toast";
-import { CreatePurchaseDialog } from './purchase_create';
 import { EditPurchaseDialog } from './purchase_edit';
 import {
   Loader2,
@@ -29,7 +28,9 @@ import {
   Info,
   Plus,
   LucideWalletCards,
-  LucideClock
+  LucideClock,
+  LucideIdCard,
+  LucideStars
 } from 'lucide-react';
 import { ConfirmDeleteDialog } from "@/components/ConfirmDelete";
 import { EditMaterialDialog } from './edit_dialog';
@@ -262,17 +263,6 @@ export default function MaterialDetailsPage() {
         isDeleting={isDeleting}
       />
 
-      <CreatePurchaseDialog
-        isOpen={isCreatePurchaseDialogOpen}
-        onOpenChange={setIsCreatePurchaseDialogOpen}
-        materialId={material.id}
-        materialName={material.name}
-        craftingUnit={material.crafting_unit}
-        onPurchaseCreated={handlePurchaseCreated}
-        purchaseUnit={material.purchase_unit}
-        conversionFactor={material.conversion_factor}
-      />
-
       {material && (
         <EditPurchaseDialog
           isOpen={isEditPurchaseDialogOpen}
@@ -304,10 +294,12 @@ export default function MaterialDetailsPage() {
           <h1 className="text-3xl font-bold tracking-tight text-gray-900">{material.name}</h1>
         </div>
         <div className="flex items-center gap-2 flex-shrink-0">
-          <Button className="bg-primary-600 text-white hover:bg-primary-700 shadow-lg hover:shadow-xl transition-all duration-200 font-medium" onClick={() => setIsCreatePurchaseDialogOpen(true)}>
-            <Plus className="mr-2 h-4 w-4" />
-            Log Purchase
-          </Button>
+          <Link href={`/app/purchases/new`}>
+            <Button className="bg-primary-600 text-white hover:bg-primary-700 shadow-lg hover:shadow-xl transition-all duration-200 font-medium" onClick={() => setIsCreatePurchaseDialogOpen(true)}>
+              <Plus className="mr-2 h-4 w-4" />
+              Log Purchase
+            </Button>
+          </Link>
           <Button variant="outline" onClick={() => setIsEditDialogOpen(true)}><Edit3 className="mr-2 h-4 w-4" />Edit</Button>
           <Button variant="destructive" onClick={() => setIsDeleteDialogOpen(true)} disabled={loading}>
             <Trash2 className="mr-2 h-4 w-4" />Delete
@@ -316,7 +308,8 @@ export default function MaterialDetailsPage() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid gap-2 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-2 md:grid-cols-2 lg:grid-cols-4">
+        <StatCard title="SKU" value={material.sku} icon={LucideIdCard} />
         <StatCard title="Current Stock"
           value={`${material.current_stock.toLocaleString()} ${material.crafting_unit}`}
           icon={Warehouse}
@@ -328,6 +321,7 @@ export default function MaterialDetailsPage() {
         <StatCard title="Purchase Cost This Month" value={FormatCurrency(purchaseCostThisMonth)} icon={LucideWalletCards} description="Total Cost for Purchases this month" />
         <StatCard title="Purchases This Month" value={purchaseCountThisMonth} icon={LucideClock} description="Purchases this month" />
         <StatCard title="Low Stock Threshold" value={`${material.minimum_threshold > 0 ? `${material.minimum_threshold.toLocaleString()} ${material.crafting_unit}` : 'Not Set'}`} icon={AlertTriangle} />
+        <StatCard title="Starting Average" value={`${(material.initial_cost / material.initial_quantity).toLocaleString()}`} icon={LucideStars} />
       </div>
 
       {/* Details Cards */}
@@ -343,6 +337,8 @@ export default function MaterialDetailsPage() {
         <Card>
           <CardHeader><CardTitle className="flex items-center gap-2 text-lg"><History className="h-5 w-5" />Tracking Details</CardTitle></CardHeader>
           <CardContent className="space-y-1 text-sm">
+            <div className="flex justify-between"><span>Starting Unit:</span> <span className="font-medium">{material.initial_quantity.toLocaleString()} {material.crafting_unit}</span></div>
+            <div className="flex justify-between"><span>Starting Cost:</span> <span className="font-medium">{material.initial_quantity.toLocaleString()}</span></div>
             <div className="flex justify-between"><span>Total Tracked Stock:</span> <span className="font-medium">{material.total_quantity.toLocaleString()} {material.crafting_unit}</span></div>
             <div className="flex justify-between"><span>Date Added:</span> <span className="font-medium">{FormatDate(material.created_at)}</span></div>
             <div className="flex justify-between"><span>Last Updated:</span> <span className="font-medium">{FormatDate(material.updated_at)}</span></div>

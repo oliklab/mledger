@@ -21,6 +21,12 @@ export type Material = {
   notes: string | null; // Can be null
   created_at: string; // Timestamps are typically represented as ISO strings
   updated_at: string;
+  sku: string,
+  initial_cost: number,
+  initial_quantity: number,
+  status: string,
+  category: string,
+  inventoryable: boolean,
 };
 
 export class MaterialStore {
@@ -83,6 +89,12 @@ export class MaterialStore {
         minimum_threshold: model.minimum_threshold,
         notes: model.notes,
         updated_at: new Date().toISOString(),
+        sku: model.sku,
+        initial_cost: model.initial_cost,
+        initial_quantity: model.initial_quantity,
+        status: model.status,
+        category: model.category,
+        inventoryable: model.inventoryable,
       })
       .eq('id', model.id)
       .eq('user_id', await this.auth.GetAuthenticatedUserId());

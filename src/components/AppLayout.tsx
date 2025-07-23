@@ -40,6 +40,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     { name: 'Dashbaord', href: '/app', icon: Home },
 
     { name: 'Materials', href: '/app/materials', icon: ShoppingBasket },
+    { name: 'Purchases', href: '/app/purchases', icon: LucideBook },
     { name: 'Recipes', href: '/app/recipe', icon: CookingPot },
     { name: 'Products', href: '/app/inventory', icon: StoreIcon },
     { name: 'Orders', href: '/app/orders', icon: LucideActivity },

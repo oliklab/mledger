@@ -29,5 +29,20 @@ export function IsThisMonth(dateString: string): boolean {
   // Use Date.UTC() to specify the date components in universal time
   const startOfMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
   return dateString >= startOfMonth.toISOString().slice(0, 10)
-
 }
+
+export const IsThisWeek = (dateString: string): boolean => {
+  const purchaseDate = new Date(dateString);
+  const now = new Date();
+
+  // Find the date of the most recent Sunday
+  const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
+  startOfWeek.setHours(0, 0, 0, 0); // Set to the beginning of Sunday
+
+  // Find the date of the upcoming Saturday
+  const endOfWeek = new Date(startOfWeek);
+  endOfWeek.setDate(startOfWeek.getDate() + 6);
+  endOfWeek.setHours(23, 59, 59, 999); // Set to the end of Saturday
+
+  return purchaseDate >= startOfWeek && purchaseDate <= endOfWeek;
+};

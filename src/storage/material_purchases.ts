@@ -11,6 +11,7 @@ export type MaterialPurchase = {
   avg_cost: number;
   supplier_name: string | null;
   supplier_contact: string | null;
+  purchase_id: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -41,6 +42,7 @@ export class MaterialPurchaseStore {
       p_total_quantity: model.total_quantity,
       p_supplier_name: model.supplier_name,
       p_supplier_contact: model.supplier_contact,
+      p_purchase_table_id: model.purchase_id,
     });
     if (error) console.error(error)
     else console.log(data)
@@ -62,6 +64,7 @@ export class MaterialPurchaseStore {
       p_total_quantity: model.total_quantity,
       p_supplier_name: model.supplier_name,
       p_supplier_contact: model.supplier_contact,
+      p_purchase_table_id: model.purchase_id,
     });
 
     if (error) throw error;
@@ -81,6 +84,7 @@ export class MaterialPurchaseStore {
       p_total_quantity: null,
       p_supplier_name: null,
       p_supplier_contact: null,
+      p_purchase_table_id: null,
     });
 
     if (error) throw error;
@@ -95,6 +99,18 @@ export class MaterialPurchaseStore {
       .from('material_purchases')
       .select('*')
       .eq('material_id', materialId)
+      .eq('user_id', await this.auth.GetAuthenticatedUserId())
+      .order('purchase_date', { ascending: false });
+
+    if (error) throw error;
+    return data;
+  }
+
+  async ReadAllForPurchase(purchaseID: string): Promise<MaterialPurchase[]> {
+    const { data, error } = await this.store.SupabaseClient()
+      .from('material_purchases')
+      .select('*')
+      .eq('purchase_id', purchaseID)
       .eq('user_id', await this.auth.GetAuthenticatedUserId())
       .order('purchase_date', { ascending: false });
 
