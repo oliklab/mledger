@@ -43,11 +43,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     { name: 'Materials', href: '/app/materials', icon: ShoppingBasket },
     { name: 'Purchases', href: '/app/purchases', icon: LucideListChecks },
     { name: 'Recipes', href: '/app/recipes', icon: CookingPot },
-    { name: 'Products', href: '/app/inventory', icon: StoreIcon },
-    { name: 'Orders', href: '/app/orders', icon: LucideActivity },
+    { name: 'Products', href: '/app/products', icon: StoreIcon },
+    { name: 'Sales', href: '/app/sales', icon: LucideActivity },
 
     { name: 'Profile', href: '/app/profile', icon: LucideUser },
-    { name: 'Support', href: '/app/support', icon: LucideHeartPulse },
+    { name: 'Support', href: '/docs/support', icon: LucideHeartPulse },
     { name: 'Documentation', href: '/docs/documentation', icon: LucideBook },
     { name: 'Lanidng Page', href: '/', icon: DoorOpen },
   ];
