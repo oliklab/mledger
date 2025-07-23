@@ -82,13 +82,13 @@ export default function PurchasesListPage() {
 
   const analytics = useMemo(() => {
     // Investment calculations
-    const totalInvestment = purchases.reduce((sum, p) => sum + p.purchase.total_cost, 0);
+    const totalInvestment = purchases.reduce((sum, p) => sum + p.total_cost, 0);
     const investmentThisMonth = purchases
       .filter(p => IsThisMonth(p.purchase.purchase_date))
-      .reduce((sum, p) => sum + p.purchase.total_cost, 0);
+      .reduce((sum, p) => sum + p.total_cost, 0);
     const investmentThisWeek = purchases
       .filter(p => IsThisWeek(p.purchase.purchase_date))
-      .reduce((sum, p) => sum + p.purchase.total_cost, 0);
+      .reduce((sum, p) => sum + p.total_cost, 0);
 
     // Count calculations
     const totalPurchasesTracked = purchases.length;
@@ -224,7 +224,7 @@ export default function PurchasesListPage() {
         <CardContent>
           <div className="space-y-4">
             {paginatedPurchases.length > 0 ? (
-              paginatedPurchases.map(({ purchase, materials: purchaseItems, total_items }) => (
+              paginatedPurchases.map(({ purchase, materials: purchaseItems, total_items, total_cost }) => (
                 <Card key={purchase.id} className="p-4">
                   <div className="flex flex-col sm:flex-row justify-between gap-4">
                     <div className="flex-1">
@@ -240,7 +240,7 @@ export default function PurchasesListPage() {
                       </p>
                     </div>
                     <div className="flex flex-col items-start sm:items-end gap-2">
-                      <p className="text-xl font-bold">{FormatCurrency(purchase.total_cost)}</p>
+                      <p className="text-xl font-bold">{FormatCurrency(total_cost)}</p>
                       <div className="flex gap-1">
                         <Button variant="ghost" size="sm" asChild><Link href={`/app/purchases/${purchase.id}`}><ViewIcon className="h-4 w-4 mr-1" />View</Link></Button>
                         <Button variant="ghost" size="sm" asChild><Link href={`/app/purchases/${purchase.id}/edit`}><Edit3 className="h-4 w-4 mr-1" />Edit</Link></Button>
