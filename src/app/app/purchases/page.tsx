@@ -129,7 +129,7 @@ export default function PurchasesListPage() {
     try {
       const supabase = await NewSPASassClient();
       await new PurchasesStore(supabase).Delete(selectedPurchaseId);
-      toast({ title: "Purchase Order Deleted", description: "The purchase order has been removed." });
+      toast({ title: "Purchase record Deleted", description: "The purchase record has been removed." });
       loadData(); // Refresh data
       setIsDeleteDialogOpen(false);
     } catch (err: any) {
@@ -156,7 +156,7 @@ export default function PurchasesListPage() {
   return (
     <div className="space-y-8 p-4 md:p-8">
       {/* --- DIALOGS --- */}
-      <ConfirmDeleteDialog isOpen={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen} onConfirm={handleConfirmDelete} itemName="this purchase order" isDeleting={isProcessing} />
+      <ConfirmDeleteDialog isOpen={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen} onConfirm={handleConfirmDelete} itemName="this purchase record" isDeleting={isProcessing} />
 
       {/* --- PAGE HEADER --- */}
       <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
@@ -256,7 +256,7 @@ export default function PurchasesListPage() {
               <div className="text-center py-16">
                 <Archive className="mx-auto h-12 w-12 text-slate-300" />
                 <h3 className="mt-2 text-lg font-medium">No purchase orders found</h3>
-                <p className="mt-1 text-sm text-gray-500">{searchTerm ? 'Try adjusting your search.' : 'Create a new purchase order to get started.'}</p>
+                <p className="mt-1 text-sm text-gray-500">{searchTerm ? 'Try adjusting your search.' : 'Create a new purchase record to get started.'}</p>
               </div>
             )}
           </div>

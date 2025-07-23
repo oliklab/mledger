@@ -39,7 +39,7 @@ export default function NewPurchasePage() {
 
   // Form State
   const [purchaseDetails, setPurchaseDetails] = useState({
-    name: `Purchase Order - 21/07/2025`,
+    name: `Purchase Record ${new Date().getFullYear()}-${new Date().getMonth() + 1}-${new Date().getDate()}`,
     purchase_date: new Date().toISOString().split('T')[0],
     status: 'Pending',
     notes: '',
@@ -101,7 +101,7 @@ export default function NewPurchasePage() {
     setError('');
 
     if (!purchaseDetails.name || !purchaseDetails.purchase_date) {
-      setError('Please provide a name and date for the purchase order.');
+      setError('Please provide a name and date for the purchase record.');
       return;
     }
     if (lineItems.some(item => !item.materialId || !item.quantity || !item.cost)) {
@@ -139,7 +139,7 @@ export default function NewPurchasePage() {
         items: itemsPayload
       });
 
-      toast({ title: "Success!", description: "Purchase order created successfully." });
+      toast({ title: "Success!", description: "Purchase record created successfully." });
       router.push('/app/purchases');
 
     } catch (err: any) {
@@ -228,7 +228,7 @@ export default function NewPurchasePage() {
             {error && <Alert variant="destructive" className="py-2 px-3 text-sm"><AlertCircle className="h-4 w-4 mr-2" />{error}</Alert>}
             <Button type="submit" size="lg" disabled={loading}>
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Save Purchase Order
+              Save Purchase Record
             </Button>
           </div>
         </div>

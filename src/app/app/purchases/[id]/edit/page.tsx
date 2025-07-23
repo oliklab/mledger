@@ -76,7 +76,7 @@ export default function EditPurchasePage() {
       }));
 
     } catch (err) {
-      setError('Could not load purchase order data.');
+      setError('Could not load purchase record data.');
     } finally {
       setInitialLoading(false);
     }
@@ -104,7 +104,7 @@ export default function EditPurchasePage() {
       return;
     }
     if (!purchaseDetails.name || !purchaseDetails.purchase_date) {
-      setError('Please provide a name and date for the purchase order.');
+      setError('Please provide a name and date for the purchase record.');
       return;
     }
     if (lineItems.some(item => !item.materialId || !item.quantity || !item.cost)) {

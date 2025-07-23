@@ -105,7 +105,7 @@ export default function PurchaseDetailsPage() {
       toast({ title: "Purchase Record Deleted", description: "The Purchase and it's items have been removed." });
       router.push('/app/purchases');
     } catch (err: any) {
-      toast({ variant: "destructive", title: "Error", description: "Could not delete purchase order." });
+      toast({ variant: "destructive", title: "Error", description: "Could not delete purchase record." });
       setIsDeletingOrder(false);
     }
   };
@@ -152,7 +152,7 @@ export default function PurchaseDetailsPage() {
     return <div className="p-8 text-center"><AlertCircle className="mx-auto h-12 w-12 text-destructive" /><h2 className="mt-4 text-xl">An Error Occurred</h2><p className="text-muted-foreground">{error}</p></div>
   }
   if (!purchaseMeta) {
-    return <div className="p-8 text-center"><p>Purchase order not found.</p></div>
+    return <div className="p-8 text-center"><p>Purchase record not found.</p></div>
   }
 
   const { purchase, materials: lineItems } = purchaseMeta;
