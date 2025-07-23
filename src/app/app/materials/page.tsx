@@ -294,7 +294,7 @@ export default function MaterialsPage() {
         <AnalyticsCard title="Total Materials" value={analytics.totalMaterials.toString()} icon={Boxes} description="Distinct raw materials you track" />
         <AnalyticsCard title="Low Stock Items" value={analytics.lowStockCount.toString()} icon={AlertTriangle} description="Items at or below threshold" />
         <AnalyticsCard title="Current Inventory Value" value={FormatCurrency(analytics.totalInventoryValue)} icon={Wallet} description="Current value of all stock on hand" />
-        <AnalyticsCard title="Investment This Month" value={FormatCurrency(analytics.investmentThisMonth)} icon={CalendarClock} description="Cost of new materials added this month" />
+        <AnalyticsCard title="Investment This Month" value={FormatCurrency(analytics.investmentThisMonth)} icon={CalendarClock} description="Cost of total material purchases this month" />
         <AnalyticsCard title="Total Purchases This Month" value={analytics.totalPurchasesThisMonth.toString()} icon={LucideClock12} description="Total Purchases made this month" />
         <AnalyticsCard title="Total Investment" value={FormatCurrency(analytics.totalInvestment)} icon={LucideLandmark} description="Total Cost of materials for all time" />
       </div>

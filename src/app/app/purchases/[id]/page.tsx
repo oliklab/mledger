@@ -203,6 +203,7 @@ export default function PurchaseDetailsPage() {
               <TableRow>
                 <TableHead>Material</TableHead>
                 <TableHead>Supplier</TableHead>
+                <TableHead>Details</TableHead>
                 <TableHead className="text-right">Quantity</TableHead>
                 <TableHead className="text-right">Cost</TableHead>
                 <TableHead className="text-center w-[50px]">Actions</TableHead>
@@ -215,6 +216,7 @@ export default function PurchaseDetailsPage() {
                   <TableRow key={item.id}>
                     <TableCell className="font-medium">{material?.name || 'Unknown Material'}</TableCell>
                     <TableCell>{item.supplier_name || 'N/A'}</TableCell>
+                    <TableCell>{item.supplier_contact || ''}</TableCell>
                     <TableCell className="text-right">{item.total_quantity.toLocaleString()} {material?.crafting_unit}</TableCell>
                     <TableCell className="text-right">{FormatCurrency(item.total_cost)}</TableCell>
                     <TableCell className="text-center">

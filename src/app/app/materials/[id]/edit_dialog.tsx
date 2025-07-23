@@ -28,6 +28,7 @@ import {
 } from 'lucide-react';
 import { Material, MaterialStore } from '@/storage/materials';
 import { NewSPASassClient } from '@/lib/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 interface EditMaterialDialogProps {
   material: Material;
@@ -59,6 +60,7 @@ export function EditMaterialDialog({ material, isOpen, onOpenChange, onMaterialU
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const { toast } = useToast();
 
   // 👇 Sync form state when the material prop changes or the dialog opens
   useEffect(() => {
@@ -87,12 +89,14 @@ export function EditMaterialDialog({ material, isOpen, onOpenChange, onMaterialU
 
     if (!formData.name || !formData.purchase_unit || !formData.crafting_unit || !formData.conversion_factor) {
       setError('Please fill out all required fields.');
+      toast({ variant: "destructive", title: "Error", description: "Please fill out all required fields." })
       return;
     }
 
     const conversionNum = parseFloat(formData.conversion_factor);
-    if (isNaN(conversionNum) || conversionNum <= 0) {
+    if (isNaN(conversionNum) || conversionNum < 0) {
       setError('Conversion factor must be a positive number.');
+      toast({ variant: "destructive", title: "Error", description: "Conversion factor must be a positive number." })
       return;
     }
 
@@ -112,6 +116,7 @@ export function EditMaterialDialog({ material, isOpen, onOpenChange, onMaterialU
       onOpenChange(false); // Close the dialog
     } catch (err: any) {
       setError('Failed to update material: ' + err.message);
+      toast({ variant: "destructive", title: "Error", description: "Failed to update material: " + err.message });
       console.error('Error updating material:', err);
     } finally {
       setLoading(false);

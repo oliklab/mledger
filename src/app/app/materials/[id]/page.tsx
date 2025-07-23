@@ -321,7 +321,7 @@ export default function MaterialDetailsPage() {
         <StatCard title="Purchase Cost This Month" value={FormatCurrency(purchaseCostThisMonth)} icon={LucideWalletCards} description="Total Cost for Purchases this month" />
         <StatCard title="Purchases This Month" value={purchaseCountThisMonth} icon={LucideClock} description="Purchases this month" />
         <StatCard title="Low Stock Threshold" value={`${material.minimum_threshold > 0 ? `${material.minimum_threshold.toLocaleString()} ${material.crafting_unit}` : 'Not Set'}`} icon={AlertTriangle} />
-        <StatCard title="Starting Average" value={`${(material.initial_cost / material.initial_quantity).toLocaleString()}`} icon={LucideStars} />
+        <StatCard title="Starting Average" value={`${FormatCurrency(material.initial_cost / material.initial_quantity).toLocaleString()}/${material.crafting_unit}`} icon={LucideStars} />
       </div>
 
       {/* Details Cards */}
@@ -338,7 +338,7 @@ export default function MaterialDetailsPage() {
           <CardHeader><CardTitle className="flex items-center gap-2 text-lg"><History className="h-5 w-5" />Tracking Details</CardTitle></CardHeader>
           <CardContent className="space-y-1 text-sm">
             <div className="flex justify-between"><span>Starting Unit:</span> <span className="font-medium">{material.initial_quantity.toLocaleString()} {material.crafting_unit}</span></div>
-            <div className="flex justify-between"><span>Starting Cost:</span> <span className="font-medium">{material.initial_quantity.toLocaleString()}</span></div>
+            <div className="flex justify-between"><span>Starting Cost:</span> <span className="font-medium">{FormatCurrency(material.initial_cost).toLocaleString()}</span></div>
             <div className="flex justify-between"><span>Total Tracked Stock:</span> <span className="font-medium">{material.total_quantity.toLocaleString()} {material.crafting_unit}</span></div>
             <div className="flex justify-between"><span>Date Added:</span> <span className="font-medium">{FormatDate(material.created_at)}</span></div>
             <div className="flex justify-between"><span>Last Updated:</span> <span className="font-medium">{FormatDate(material.updated_at)}</span></div>

@@ -127,7 +127,7 @@ export function EditPurchaseDialog({ isOpen, onOpenChange, onPurchaseUpdated, pu
             <Input id="supplier_name" value={formData.supplier_name} onChange={handleInputChange} className="col-span-3" />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="supplier_contact" className="text-right">Contact</Label>
+            <Label htmlFor="supplier_contact" className="text-right">Details</Label>
             <Input id="supplier_contact" value={formData.supplier_contact} onChange={handleInputChange} className="col-span-3" />
           </div>
         </form>

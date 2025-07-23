@@ -31,6 +31,7 @@ import {
 import { Material, MaterialStore } from '@/storage/materials';
 import { Label } from '@/components/ui/label';
 import { HelpText } from '@/components/ui/help-text';
+import { useToast } from '@/hooks/use-toast';
 
 // Add New Material Button and Dialog.
 // Define props for the component
@@ -82,6 +83,7 @@ export function CreateMaterialDialog({ onMaterialCreated }: CreateMaterialDialog
 
   // Use a single state object for the form
   const [formData, setFormData] = useState<MaterialFormState>(initialFormState);
+  const { toast } = useToast();
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -107,6 +109,7 @@ export function CreateMaterialDialog({ onMaterialCreated }: CreateMaterialDialog
       !formData.total_cost ||
       !formData.total_quantity) {
       setError('Please fill out all required fields.');
+      toast({ variant: "destructive", title: "Error", description: "Please fill out all required fields." });
       return;
     }
 
@@ -114,8 +117,9 @@ export function CreateMaterialDialog({ onMaterialCreated }: CreateMaterialDialog
     const costNum = parseFloat(formData.total_cost);
     const quantityNum = parseFloat(formData.total_quantity);
 
-    if (isNaN(conversionNum) || conversionNum <= 0 || isNaN(costNum) || costNum < 0 || isNaN(quantityNum) || quantityNum <= 0) {
+    if (isNaN(conversionNum) || conversionNum <= 0 || isNaN(costNum) || costNum < 0 || isNaN(quantityNum) || quantityNum < 0) {
       setError('Please enter valid positive numbers for factors, costs, and quantities.');
+      toast({ variant: "destructive", title: "Error", description: "Please enter valid positive numbers for factors, costs, and quantities." })
       return;
     }
 
@@ -148,6 +152,7 @@ export function CreateMaterialDialog({ onMaterialCreated }: CreateMaterialDialog
       setOpen(false);
     } catch (err: any) {
       setError(err.message || 'Err occured creating a new Material');
+      toast({ variant: "destructive", title: "Error", description: `Error occured creating a new Material: ${err.message}` });
     } finally {
       setLoading(false);
     }
@@ -307,7 +312,7 @@ export function CreateMaterialDialog({ onMaterialCreated }: CreateMaterialDialog
                 onChange={handleInputChange}
                 placeholder="Example: 5 (in Crafting Unit)"
                 required
-                className="text-base py-3 px-4 rounded-lg border-2 border-slate-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-100 transition-all duration-200"
+                className="text-base py-3 px-4 rounded-lg border-2 border-slate-200 focus:ring-4 focus:ring-primary-100 transition-all duration-200"
               />
               <HelpText variant="success">
                 Enter the quantity of the materials you currently have in Crafting Unit, if you have 5 kg, enter "5" here.

@@ -40,6 +40,7 @@ export const PurchaseHistoryList = ({ purchases, craftingUnit, onEdit, onDelete 
               <TableRow>
                 <TableHead>Date</TableHead>
                 <TableHead>Supplier</TableHead>
+                <TableHead>Details</TableHead>
                 <TableHead className="text-right">Quantity</TableHead>
                 <TableHead className="text-right">Total Cost</TableHead>
                 <TableHead className="text-right">Avg. Cost / Unit</TableHead>
@@ -51,6 +52,7 @@ export const PurchaseHistoryList = ({ purchases, craftingUnit, onEdit, onDelete 
                 <TableRow key={purchase.id}>
                   <TableCell>{FormatDate(purchase.purchase_date)}</TableCell>
                   <TableCell className="font-medium">{purchase.supplier_name || 'N/A'}</TableCell>
+                  <TableCell className="font-medium">{purchase.supplier_contact || ''}</TableCell>
                   <TableCell className="text-right">{purchase.total_quantity.toLocaleString()} {craftingUnit}</TableCell>
                   <TableCell className="text-right">{FormatCurrency(purchase.total_cost)}</TableCell>
                   <TableCell className="text-right">{FormatCurrency(purchase.avg_cost)}</TableCell>

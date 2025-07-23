@@ -190,7 +190,7 @@ export default function EditPurchasePage() {
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-slate-200 mt-4">
                     <div className="space-y-1"><Label>Supplier Name <span className="text-xs text-muted-foreground">(Optional)</span></Label><Input placeholder="e.g., Craft Supplies Co." value={item.supplier_name} onChange={(e) => handleItemChange(item.id, 'supplier_name', e.target.value)} /></div>
-                    <div className="space-y-1"><Label>Supplier Contact <span className="text-xs text-muted-foreground">(Optional)</span></Label><Input placeholder="e.g., order #, phone" value={item.supplier_contact} onChange={(e) => handleItemChange(item.id, 'supplier_contact', e.target.value)} /></div>
+                    <div className="space-y-1"><Label>Details <span className="text-xs text-muted-foreground">(Optional)</span></Label><Input placeholder="e.g., order #, phone" value={item.supplier_contact} onChange={(e) => handleItemChange(item.id, 'supplier_contact', e.target.value)} /></div>
                   </div>
                 </div>
               );
