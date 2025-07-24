@@ -29,6 +29,15 @@ export type Material = {
   inventoryable: boolean,
 };
 
+export type MaterialUsageHistory = {
+  build_id: string;
+  build_date: string;
+  product_id: string;
+  product_name: string;
+  quantity_used: number;
+  cost_at_build: number;
+};
+
 export class MaterialStore {
   private store: SaasClient;
   private auth: AuthStore;
@@ -110,5 +119,26 @@ export class MaterialStore {
       .eq('id', model.id);
 
     if (err) throw err;
+  }
+
+  /**
+ * Fetches the historical usage of a specific material across all product builds.
+ * Calls the `get_material_usage_history` RPC function.
+ * @param materialId The UUID of the material to track.
+ * @returns An array of MaterialUsageHistory records.
+ */
+  async GetUsageHistory(materialId: string): Promise<MaterialUsageHistory[]> {
+    const { data, error } = await this.store.SupabaseClient()
+      .rpc('get_material_usage_history', {
+        p_material_id: materialId, // This maps to the function's parameter
+      });
+
+    if (error) {
+      console.error("Error fetching material usage history:", error);
+      throw error;
+    }
+
+    // Return the data, or an empty array if no history is found
+    return data || [];
   }
 }

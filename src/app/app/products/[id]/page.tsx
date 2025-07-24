@@ -13,10 +13,10 @@ import { Material, MaterialStore } from '@/storage/materials';
 // UI Components
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Skeleton } from '@/components/ui/skeleton';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { ConfirmDeleteDialog } from "@/components/ConfirmDelete";
 
 // Utils and Icons
@@ -35,8 +35,7 @@ import {
   StickyNote,
   FlaskConical,
   Tags,
-  DollarSign,
-  LucideAArrowUp
+  DollarSign
 } from 'lucide-react';
 
 // Enhanced type for the details page
@@ -144,16 +143,16 @@ export default function ProductDetailsPage() {
   }, [product]);
 
   // Handlers
-  const handleConfirmDeleteProduct = async () => {
+  const handleDeleteProduct = async (returnStock: boolean) => {
     if (!product) return;
     setIsDeletingProduct(true);
     try {
       const supabase = await NewSPASassClient();
-      await new ProductStore(supabase).Delete(product.id);
-      toast({ title: "Product Deleted", description: `"${product.name}" has been removed.` });
+      await new ProductStore(supabase).DeleteWithStockManagement(product.id, returnStock);
+      toast({ title: "Product Deleted", description: `"${product.name}" has been removed successfully.` });
       router.push('/app/products');
     } catch (err: any) {
-      toast({ variant: "destructive", title: "Error", description: "Could not delete the product." });
+      toast({ variant: "destructive", title: "Error", description: err.message || "Could not delete the product." });
       setIsDeletingProduct(false);
     }
   };
@@ -166,7 +165,7 @@ export default function ProductDetailsPage() {
       await new ProductStore(supabase).deleteBuild(buildToDeleteId);
       toast({ title: "Build Reverted", description: "The product build has been deleted and stocks have been restored." });
       setBuildToDeleteId(null);
-      loadData(); // Refresh all data
+      loadData();
     } catch (err: any) {
       toast({ variant: "destructive", title: "Error", description: err.message });
     } finally {
@@ -184,7 +183,45 @@ export default function ProductDetailsPage() {
   return (
     <div className="p-4 md:p-8 space-y-6">
       {/* --- DIALOGS --- */}
-      <ConfirmDeleteDialog isOpen={isDeleteProductDialogOpen} onOpenChange={setIsDeleteProductDialogOpen} onConfirm={handleConfirmDeleteProduct} itemName={`the product "${product.name}"`} isDeleting={isDeletingProduct} />
+      <Dialog open={isDeleteProductDialogOpen} onOpenChange={setIsDeleteProductDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete "{product.name}"?</DialogTitle>
+            <DialogDescription>
+              This action cannot be undone. You have <span className="font-bold text-primary">{product.current_stock}</span> unit(s) of this product in stock. Please choose how to handle them.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4 space-y-4">
+            <Alert>
+              <Package className="h-4 w-4" />
+              <AlertTitle>Return Materials to Stock</AlertTitle>
+              <AlertDescription>
+                This will "dismantle" the existing product stock and return the component materials to your inventory. Choose this if you want to reuse the materials.
+              </AlertDescription>
+            </Alert>
+            <Alert variant="destructive">
+              <Trash2 className="h-4 w-4" />
+              <AlertTitle>Discard Stock & Delete</AlertTitle>
+              <AlertDescription>
+                This will permanently delete the product and its stock record. The materials will NOT be returned. Choose this for spoilage or loss.
+              </AlertDescription>
+            </Alert>
+          </div>
+          <DialogFooter className="sm:justify-between">
+            <Button variant="outline" onClick={() => setIsDeleteProductDialogOpen(false)} disabled={isDeletingProduct}>Cancel</Button>
+            <div className="flex flex-col-reverse sm:flex-row gap-2">
+              <Button variant="destructive" onClick={() => handleDeleteProduct(false)} disabled={isDeletingProduct}>
+                {isDeletingProduct && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Discard Stock & Delete
+              </Button>
+              <Button onClick={() => handleDeleteProduct(true)} disabled={isDeletingProduct}>
+                {isDeletingProduct && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Return Stock & Delete
+              </Button>
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       <ConfirmDeleteDialog isOpen={!!buildToDeleteId} onOpenChange={() => setBuildToDeleteId(null)} onConfirm={handleConfirmDeleteBuild} itemName="this product build" isDeleting={isDeletingBuild} />
 
       {/* --- PAGE HEADER --- */}
@@ -195,6 +232,9 @@ export default function ProductDetailsPage() {
           <p className="text-muted-foreground mt-1">SKU: {product.sku || 'N/A'}</p>
         </div>
         <div className="flex items-center gap-2 flex-shrink-0">
+          <Button variant="outline" size="sm" onClick={() => router.push(`/app/products/${product.id}/manufacture`)}>
+            <Hammer className="h-4 w-4 mr-2" />Add New Stock
+          </Button>
           <Button variant="outline" asChild><Link href={`/app/products/${id}/edit`}><Edit3 className="mr-2 h-4 w-4" />Edit Product</Link></Button>
           <Button variant="destructive" onClick={() => setIsDeleteProductDialogOpen(true)}><Trash2 className="mr-2 h-4 w-4" />Delete Product</Button>
         </div>
@@ -208,7 +248,7 @@ export default function ProductDetailsPage() {
         <StatCard title="Profit Margin" icon={DollarSign}>
           <div className={`text-2xl font-bold ${profitMargin < 0 ? 'text-destructive' : ''}`}>{profitMargin.toFixed(1)}%</div>
         </StatCard>
-        <StatCard title="Suggested Selling Price" value={FormatCurrency(product.recipe_cost * 2.5)} icon={LucideAArrowUp} />
+        <StatCard title="Suggested Price" value={FormatCurrency(product.recipe_cost * 2.5)} icon={Package} />
       </div>
 
       {/* --- DETAILS & BUILDS --- */}

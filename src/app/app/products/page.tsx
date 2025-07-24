@@ -171,7 +171,6 @@ export default function ProductsPage() {
                   <DropdownMenuItem onSelect={() => router.push(`/app/products/${product.id}`)}><ViewIcon className="mr-2 h-4 w-4" />View Details</DropdownMenuItem>
                   <DropdownMenuItem onSelect={() => router.push(`/app/products/${product.id}/edit`)}><Edit3 className="mr-2 h-4 w-4" />Edit Product</DropdownMenuItem>
                   <DropdownMenuItem onSelect={() => router.push(`/app/products/${product.id}/manufacture`)}><LucideBuilding className="mr-2 h-4 w-4" />Add New Stock</DropdownMenuItem>
-                  <DropdownMenuItem onSelect={() => { setSelectedProduct({ id: product.id, name: product.name }); setIsDeleteDialogOpen(true); }} className="text-destructive focus:text-destructive"><Trash2 className="mr-2 h-4 w-4" />Delete Product</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>

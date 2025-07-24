@@ -4,7 +4,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, useRouter, usePathname, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { NewSPASassClient } from '@/lib/supabase/client';
-import { Material, MaterialStore } from '@/storage/materials';
+import { Material, MaterialStore, MaterialUsageHistory } from '@/storage/materials';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -38,6 +38,8 @@ import { FormatCurrency, FormatDate } from '@/lib/utils';
 import { PurchaseHistoryList } from './purchase_history';
 import { MaterialPurchase, MaterialPurchaseStore } from '@/storage/material_purchases';
 import { IsThisMonth } from '@/lib/utils';
+import { ProductStore } from '@/storage/products';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 // A small component for displaying stats
 const StatCard = ({ title, value, icon: Icon, description, alert }: { title: string, value: string | number, icon: React.ElementType, description?: string, alert?: string }) => (
@@ -56,6 +58,40 @@ const StatCard = ({ title, value, icon: Icon, description, alert }: { title: str
         {alert}
       </div>
     )}
+  </Card>
+);
+
+const UsageHistoryList = ({ history, craftingUnit }: { history: MaterialUsageHistory[], craftingUnit: string }) => (
+  <Card>
+    <CardHeader><CardTitle className="flex items-center gap-2 text-lg"><History className="h-5 w-5" />Usage History</CardTitle></CardHeader>
+    <CardContent>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Build Date</TableHead>
+            <TableHead>Product Built</TableHead>
+            <TableHead className="text-right">Quantity Used</TableHead>
+            <TableHead className="text-right">Cost at Build</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {history.length > 0 ? history.map(use => (
+            <TableRow key={use.build_id}>
+              <TableCell>{FormatDate(use.build_date)}</TableCell>
+              <TableCell>
+                <Link href={`/app/products/${use.product_id}`} className="font-medium text-primary hover:underline">
+                  {use.product_name}
+                </Link>
+              </TableCell>
+              <TableCell className="text-right">{use.quantity_used.toLocaleString()} {craftingUnit}</TableCell>
+              <TableCell className="text-right">{FormatCurrency(use.cost_at_build)}</TableCell>
+            </TableRow>
+          )) : (
+            <TableRow><TableCell colSpan={4} className="h-24 text-center text-muted-foreground">This material has not been used in any product builds yet.</TableCell></TableRow>
+          )}
+        </TableBody>
+      </Table>
+    </CardContent>
   </Card>
 );
 
@@ -82,6 +118,7 @@ export default function MaterialDetailsPage() {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const [purchases, setPurchases] = useState<MaterialPurchase[]>([]);
+  const [usageHistory, setUsageHistory] = useState<MaterialUsageHistory[]>([]);
   const [isCreatePurchaseDialogOpen, setIsCreatePurchaseDialogOpen] = useState(false);
 
   const loadMaterialAndPurchases = useCallback(async () => {
@@ -90,14 +127,16 @@ export default function MaterialDetailsPage() {
     try {
       const supabase = await NewSPASassClient();
       // Fetch material and purchases in parallel for efficiency
-      const [materialData, purchasesData] = await Promise.all([
+      const [materialData, purchasesData, uses] = await Promise.all([
         new MaterialStore(supabase).Read(id),
-        new MaterialPurchaseStore(supabase).ReadAllForMaterial(id)
+        new MaterialPurchaseStore(supabase).ReadAllForMaterial(id),
+        new MaterialStore(supabase).GetUsageHistory(id),
       ]);
 
       if (materialData) {
         setMaterial(materialData);
         setPurchases(purchasesData);
+        setUsageHistory(uses);
       } else {
         setError('Material not found.');
       }
@@ -361,6 +400,10 @@ export default function MaterialDetailsPage() {
         onEdit={handleOpenEditPurchaseDialog}
         onDelete={handleOpenDeletePurchaseDialog}
         craftingUnit={material.crafting_unit} />
+
+      <UsageHistoryList history={usageHistory} craftingUnit={material.crafting_unit} />
+
     </div>
+
   );
 }

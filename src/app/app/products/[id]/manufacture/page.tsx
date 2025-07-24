@@ -115,7 +115,7 @@ export default function ManufactureProductPage() {
   }
 
   return (
-    <div className="p-4 md:p-8 max-w-2xl mx-auto space-y-6">
+    <div className="p-4 md:p-8 max-w-4xl mx-auto space-y-6">
       <div>
         <Button variant="ghost" className="mb-2 pl-0 text-muted-foreground hover:text-primary" onClick={() => router.back()}>
           <ArrowLeft className="h-4 w-4 mr-2" />
@@ -175,7 +175,7 @@ export default function ManufactureProductPage() {
         </Card>
 
         <div className="flex justify-end items-center gap-4 mt-6">
-          {error && <Alert variant="destructive" className="py-2 px-3 text-sm flex-1"><AlertCircle className="h-4 w-4 mr-2" />{error}</Alert>}
+          {error && <Alert variant="destructive" className="py-2 px-3 text-sm flex-1">{error}</Alert>}
           <Button type="submit" size="lg" disabled={loading || !product?.recipe}>
             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             <Hammer className="mr-2 h-4 w-4" />

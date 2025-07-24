@@ -122,6 +122,19 @@ export class ProductStore {
     if (error) throw error;
   }
 
+  async DeleteWithStockManagement(productId: string, returnStock: boolean): Promise<void> {
+    const { error } = await this.store.SupabaseClient().rpc('delete_product_and_manage_stock', {
+      p_product_id: productId,
+      p_return_stock: returnStock
+    });
+
+    if (error) {
+      console.error("Error calling delete_product_and_manage_stock RPC:", error);
+      throw error;
+    }
+  }
+
+
   // --- Product Build Operations (RPC Calls) ---
 
   /**
