@@ -64,7 +64,7 @@ const DetailStat = ({ label, value, subValue }: { label: string, value: string |
 const BuildHistoryList = ({ builds, onDelete }: { builds: ProductBuild[], onDelete: (buildId: string) => void }) => (
   <Card>
     <CardHeader>
-      <CardTitle>Build History</CardTitle>
+      <CardTitle>Manufacturing History</CardTitle>
       <CardDescription>A log of all manufacturing runs for this product.</CardDescription>
     </CardHeader>
     <CardContent>
@@ -266,16 +266,15 @@ export default function ProductDetailsPage() {
       </div>
 
       {/* --- DETAILS & BUILDS --- */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-6">
-          <BuildHistoryList builds={builds} onDelete={(buildId) => setBuildToDeleteId(buildId)} />
-          <Card><CardHeader><CardTitle>Sales History</CardTitle></CardHeader><CardContent className="text-center text-muted-foreground py-12"><p>Sales tracking is coming soon!</p></CardContent></Card>
-        </div>
-        <div className="lg:col-span-1 space-y-6">
-          <Card><CardHeader><CardTitle className="flex items-center gap-2"><FlaskConical className="h-5 w-5" />Linked Recipe</CardTitle></CardHeader><CardContent>{product.recipe ? (<Link href={`/app/recipes/${product.recipe.recipe.id}`} className="font-medium text-primary hover:underline">{product.recipe.recipe.name}</Link>) : (<p className="text-sm text-muted-foreground">No recipe linked.</p>)}</CardContent></Card>
-          {product.notes && (<Card><CardHeader><CardTitle className="flex items-center gap-2"><StickyNote className="h-5 w-5" />Notes</CardTitle></CardHeader><CardContent><p className="text-sm text-muted-foreground whitespace-pre-wrap">{product.notes}</p></CardContent></Card>)}
-        </div>
+      <div className="grid grid-cols-2 lg:grid-cols-2 gap-6">
+        <Card><CardHeader><CardTitle className="flex items-center gap-2"><FlaskConical className="h-5 w-5" />Linked Recipe</CardTitle></CardHeader><CardContent>{product.recipe ? (<Link href={`/app/recipes/${product.recipe.recipe.id}`} className="font-medium text-primary hover:underline">{product.recipe.recipe.name}</Link>) : (<p className="text-sm text-muted-foreground">No recipe linked.</p>)}</CardContent></Card>
+        {product.notes && (<Card><CardHeader><CardTitle className="flex items-center gap-2"><StickyNote className="h-5 w-5" />Notes</CardTitle></CardHeader><CardContent><p className="text-sm text-muted-foreground whitespace-pre-wrap">{product.notes}</p></CardContent></Card>)}
       </div>
+      <div className="grid grid-cols-2 lg:grid-cols-2 gap-6">
+        <BuildHistoryList builds={builds} onDelete={(buildId) => setBuildToDeleteId(buildId)} />
+        <Card><CardHeader><CardTitle>Sales History</CardTitle></CardHeader><CardContent className="text-center text-muted-foreground py-12"><p>Sales tracking is coming soon!</p></CardContent></Card>
+      </div>
+
     </div>
   );
 }

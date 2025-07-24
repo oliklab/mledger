@@ -6,7 +6,7 @@ import Link from 'next/link';
 
 // Supabase and Storage
 import { NewSPASassClient } from '@/lib/supabase/client';
-import { Product, ProductStore } from '@/storage/products';
+import { Product, ProductStore, ProductBuild } from '@/storage/products';
 import { RecipeMetadata, RecipeStore } from '@/storage/recipes';
 import { Material, MaterialStore } from '@/storage/materials';
 
@@ -14,15 +14,13 @@ import { Material, MaterialStore } from '@/storage/materials';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AnalyticsCard } from '@/components/AnalyticsCard';
 import { ConfirmDeleteDialog } from '@/components/ConfirmDelete';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 // Utils and Icons
-import { FormatCurrency } from '@/lib/utils';
+import { FormatCurrency, IsThisMonth } from '@/lib/utils';
 import { useToast } from "@/hooks/use-toast";
 import {
   Loader2,
@@ -41,7 +39,9 @@ import {
   MoreVertical,
   ViewIcon,
   Trash2,
-  LucideBuilding
+  CalendarClock,
+  Repeat,
+  History
 } from 'lucide-react';
 
 // Enhanced type for UI, combining data from different sources
@@ -57,15 +57,12 @@ export default function ProductsPage() {
   // State
   const [initialLoading, setInitialLoading] = useState(true);
   const [products, setProducts] = useState<EnhancedProduct[]>([]);
+  const [builds, setBuilds] = useState<ProductBuild[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [error, setError] = useState('');
 
   // Dialog State
-  const [buildProduct, setBuildProduct] = useState<EnhancedProduct | null>(null);
-  const [buildQuantity, setBuildQuantity] = useState('1');
-  const [buildNotes, setBuildNotes] = useState('');
-  const [isBuilding, setIsBuilding] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<{ id: string; name: string } | null>(null);
@@ -75,11 +72,14 @@ export default function ProductsPage() {
   const loadData = useCallback(async () => {
     try {
       const supabase = await NewSPASassClient();
-      const [productsData, recipesData, materialsData] = await Promise.all([
+      const [productsData, recipesData, materialsData, buildsData] = await Promise.all([
         new ProductStore(supabase).ReadAll(),
         new RecipeStore(supabase).ReadAllMetadata(),
-        new MaterialStore(supabase).ReadAll()
+        new MaterialStore(supabase).ReadAll(),
+        new ProductStore(supabase).readAllBuilds(),
       ]);
+
+      setBuilds(buildsData);
 
       const materialMap = new Map(materialsData.map(m => [m.id, m]));
       const recipeMap = new Map(recipesData.map(r => [r.recipe.id, r]));
@@ -107,12 +107,24 @@ export default function ProductsPage() {
   const analytics = useMemo(() => {
     const totalStockValue = products.reduce((sum, p) => sum + (p.current_stock * (p.selling_price || 0)), 0);
     const totalCOG = products.reduce((sum, p) => sum + (p.current_stock * p.recipe_cost), 0);
+
+    const totalCostOfAllBuilds = builds.reduce((sum, b) => sum + b.total_cost_at_build, 0);
+    const avgBuildCost = builds.length > 0 ? totalCostOfAllBuilds / builds.length : 0;
+    const latestBuildCost = builds[0]?.total_cost_at_build || 0;
+
+    const unitsBuiltThisMonth = builds
+      .filter(b => IsThisMonth(b.created_at))
+      .reduce((sum, b) => sum + b.quantity_built, 0);
+
     return {
       totalProducts: products.length,
       totalStockValue: FormatCurrency(totalStockValue),
       totalCOG: FormatCurrency(totalCOG),
+      avgBuildCost: FormatCurrency(avgBuildCost),
+      latestBuildCost: FormatCurrency(latestBuildCost),
+      unitsBuiltThisMonth: unitsBuiltThisMonth.toLocaleString(),
     };
-  }, [products]);
+  }, [products, builds]);
 
   // Filtering & Pagination
   const filteredProducts = products.filter(p =>
@@ -122,11 +134,14 @@ export default function ProductsPage() {
   const paginatedProducts = filteredProducts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
 
+  // Handlers
   const handleConfirmDelete = async () => {
     if (!selectedProduct) return;
     setIsDeleting(true);
     try {
       const supabase = await NewSPASassClient();
+      // NOTE: This uses the simple delete. For the choice-based delete, that logic
+      // remains on the details page where the user can make an informed decision.
       await new ProductStore(supabase).Delete(selectedProduct.id);
       toast({ title: "Product Deleted", description: `"${selectedProduct.name}" has been removed.` });
       loadData();
@@ -160,8 +175,10 @@ export default function ProductsPage() {
               </div>
             </div>
             <div className="flex items-center gap-1 flex-shrink-0">
-              <Button variant="outline" size="sm" onClick={() => router.push(`/app/products/${product.id}/manufacture`)}>
-                <Hammer className="h-4 w-4 mr-2" />Add New Stock
+              <Button variant="outline" size="sm" asChild>
+                <Link href={`/app/products/${product.id}/manufacture`}>
+                  <Hammer className="h-4 w-4 mr-2" />Log Build
+                </Link>
               </Button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -170,7 +187,7 @@ export default function ProductsPage() {
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem onSelect={() => router.push(`/app/products/${product.id}`)}><ViewIcon className="mr-2 h-4 w-4" />View Details</DropdownMenuItem>
                   <DropdownMenuItem onSelect={() => router.push(`/app/products/${product.id}/edit`)}><Edit3 className="mr-2 h-4 w-4" />Edit Product</DropdownMenuItem>
-                  <DropdownMenuItem onSelect={() => router.push(`/app/products/${product.id}/manufacture`)}><LucideBuilding className="mr-2 h-4 w-4" />Add New Stock</DropdownMenuItem>
+                  <DropdownMenuItem onSelect={() => { setSelectedProduct({ id: product.id, name: product.name }); setIsDeleteDialogOpen(true); }} className="text-destructive focus:text-destructive"><Trash2 className="mr-2 h-4 w-4" />Delete Product</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
@@ -218,10 +235,13 @@ export default function ProductsPage() {
 
       {error && <Alert variant="destructive"><AlertCircle className="h-4 w-4" /><AlertDescription>{error}</AlertDescription></Alert>}
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <AnalyticsCard title="Total Products" value={analytics.totalProducts.toString()} icon={Boxes} description="The number of unique sellable products you track." />
-        <AnalyticsCard title="Total Stock Value (Retail)" value={analytics.totalStockValue} icon={Wallet} description="The total retail value of all products currently in stock." />
-        <AnalyticsCard title="Total Stock Value (COGS)" value={analytics.totalCOG} icon={Package} description="The total material cost (Cost of Goods Sold) of all products in stock." />
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+        <AnalyticsCard title="Total Products" value={analytics.totalProducts.toString()} icon={Boxes} description="Unique sellable products." />
+        <AnalyticsCard title="Stock Value (Retail)" value={analytics.totalStockValue} icon={Wallet} description="Total retail value of all stock." />
+        <AnalyticsCard title="Stock Value (COGS)" value={analytics.totalCOG} icon={Package} description="Total material cost of all stock." />
+        <AnalyticsCard title="Avg. Build Cost" value={analytics.avgBuildCost} icon={Repeat} description="Average cost per manufacturing batch." />
+        <AnalyticsCard title="Latest Build Cost" value={analytics.latestBuildCost} icon={History} description="Material cost of the most recent build." />
+        <AnalyticsCard title="Units Built This Month" value={analytics.unitsBuiltThisMonth} icon={CalendarClock} description="Total product units manufactured." />
       </div>
 
       <Card>
