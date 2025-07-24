@@ -69,6 +69,7 @@ export class ProductStore {
       .from('products')
       .select('*')
       .eq('id', id)
+      .eq('user_id', await this.auth.GetAuthenticatedUserId())
       .single();
 
     if (error) throw error;
@@ -82,6 +83,7 @@ export class ProductStore {
     const { data, error } = await this.store.SupabaseClient()
       .from('products')
       .select('*')
+      .eq('user_id', await this.auth.GetAuthenticatedUserId())
       .order('name', { ascending: true });
 
     if (error) throw error;
@@ -178,6 +180,7 @@ export class ProductStore {
     const { data, error } = await this.store.SupabaseClient()
       .from('product_builds')
       .select('*')
+      .eq('user_id', await this.auth.GetAuthenticatedUserId())
       .order('created_at', { ascending: false });
 
     if (error) throw error;
