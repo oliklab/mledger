@@ -179,7 +179,7 @@ export default function SalesPage() {
                         </Link>
                         <Badge variant={getStatusVariant(sale.status)}>{sale.status}</Badge>
                       </div>
-                      <p className="text-sm text-muted-foreground">{FormatDate(sale.sale_date)} • {items.length} item(s)</p>
+                      <p className="text-sm text-muted-foreground">{FormatDate(sale.created_at)} • {items.length} item(s)</p>
                     </div>
                     <div className="flex items-center gap-4">
                       <div className="text-right">

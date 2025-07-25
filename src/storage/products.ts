@@ -31,6 +31,15 @@ export type ProductBuild = {
   created_at: string;
 };
 
+export type ProductSalesHistory = {
+  sale_id: string;
+  sale_date: string;
+  customer_details: string | null;
+  quantity_sold: number;
+  price_per_unit: number;
+  subtotal: number;
+};
+
 export class ProductStore {
   private store: SaasClient;
   private auth: AuthStore;
@@ -199,6 +208,19 @@ export class ProductStore {
       .order('created_at', { ascending: false });
 
     if (error) throw error;
+    return data || [];
+  }
+
+  async getSalesHistory(productId: string): Promise<ProductSalesHistory[]> {
+    const { data, error } = await this.store.SupabaseClient()
+      .rpc('get_product_sales_history', {
+        p_product_id: productId,
+      });
+
+    if (error) {
+      console.error("Error fetching product sales history:", error);
+      throw error;
+    }
     return data || [];
   }
 }

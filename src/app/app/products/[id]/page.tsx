@@ -6,7 +6,7 @@ import Link from 'next/link';
 
 // Supabase and Storage
 import { NewSPASassClient } from '@/lib/supabase/client';
-import { Product, ProductBuild, ProductStore } from '@/storage/products';
+import { Product, ProductBuild, ProductStore, ProductSalesHistory } from '@/storage/products';
 import { RecipeMetadata, RecipeStore } from '@/storage/recipes';
 import { Material, MaterialStore } from '@/storage/materials';
 
@@ -41,7 +41,7 @@ import {
   Repeat,
   Lightbulb,
   TrendingUp,
-  TrendingDown
+  ShoppingCart // Added for Sales History
 } from 'lucide-react';
 
 // Enhanced type for the details page
@@ -100,6 +100,43 @@ const BuildHistoryList = ({ builds, onDelete }: { builds: ProductBuild[], onDele
   </Card>
 );
 
+const SalesHistoryList = ({ history }: { history: ProductSalesHistory[] }) => (
+  <Card>
+    <CardHeader>
+      <CardTitle>Sales History</CardTitle>
+      <CardDescription>A log of all completed sales including this product.</CardDescription>
+    </CardHeader>
+    <CardContent>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Sale Date</TableHead>
+            <TableHead>Customer</TableHead>
+            <TableHead className="text-right">Quantity Sold</TableHead>
+            <TableHead className="text-right">Revenue</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {history.length > 0 ? history.map(sale => (
+            <TableRow key={sale.sale_id}>
+              <TableCell>{FormatDate(sale.sale_date)}</TableCell>
+              <TableCell>
+                <Link href={`/app/sales/${sale.sale_id}`} className="font-medium text-primary hover:underline">
+                  {sale.customer_details || 'Walk-in Sale'}
+                </Link>
+              </TableCell>
+              <TableCell className="text-right font-medium">{sale.quantity_sold}</TableCell>
+              <TableCell className="text-right font-medium">{FormatCurrency(sale.subtotal)}</TableCell>
+            </TableRow>
+          )) : (
+            <TableRow><TableCell colSpan={4} className="h-24 text-center">This product has not been part of any completed sales yet.</TableCell></TableRow>
+          )}
+        </TableBody>
+      </Table>
+    </CardContent>
+  </Card>
+);
+
 export default function ProductDetailsPage() {
   const router = useRouter();
   const params = useParams();
@@ -109,6 +146,7 @@ export default function ProductDetailsPage() {
   // State
   const [product, setProduct] = useState<EnhancedProductDetails | null>(null);
   const [builds, setBuilds] = useState<ProductBuild[]>([]);
+  const [salesHistory, setSalesHistory] = useState<ProductSalesHistory[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -126,10 +164,11 @@ export default function ProductDetailsPage() {
       const productData = await productStore.Read(id);
       if (!productData) throw new Error("Product not found.");
 
-      const [recipeData, materialsData, buildsData] = await Promise.all([
+      const [recipeData, materialsData, buildsData, salesHistoryData] = await Promise.all([
         productData.recipe_id ? new RecipeStore(supabase).ReadMetadata(productData.recipe_id) : Promise.resolve(null),
         new MaterialStore(supabase).ReadAll(),
-        productStore.readBuildsForProduct(id)
+        productStore.readBuildsForProduct(id),
+        productStore.getSalesHistory(id) // Fetching sales history
       ]);
 
       const materialMap = new Map(materialsData.map(m => [m.id, m]));
@@ -140,6 +179,7 @@ export default function ProductDetailsPage() {
 
       setProduct({ ...productData, recipe: recipeData, recipe_cost });
       setBuilds(buildsData);
+      setSalesHistory(salesHistoryData); // Storing sales history
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -151,7 +191,7 @@ export default function ProductDetailsPage() {
 
   const analytics = useMemo(() => {
     if (!product || !builds) return {
-      stockValueCOGS: 0, totalUnitsBuilt: 0, avgBuildCost: 0, latestBuildCost: 0, avgCostPerUnit: 0, profitMargin: 0
+      stockValueCOGS: 0, totalUnitsBuilt: 0, avgBuildCost: 0, latestBuildCost: 0, avgCostPerUnit: 0, profitMargin: 0, totalUnitsSold: 0, totalRevenue: 0
     };
 
     const stockValueCOGS = product.current_stock * product.recipe_cost;
@@ -164,8 +204,12 @@ export default function ProductDetailsPage() {
     const profit = (product.selling_price || 0) - product.recipe_cost;
     const profitMargin = (product.selling_price || 0) > 0 ? (profit / (product.selling_price || 1)) * 100 : 0;
 
-    return { stockValueCOGS, totalUnitsBuilt, avgBuildCost, latestBuildCost, avgCostPerUnit, profitMargin };
-  }, [product, builds]);
+    // New sales analytics
+    const totalUnitsSold = salesHistory.reduce((sum, s) => sum + s.quantity_sold, 0);
+    const totalRevenue = salesHistory.reduce((sum, s) => sum + s.subtotal, 0);
+
+    return { stockValueCOGS, totalUnitsBuilt, avgBuildCost, latestBuildCost, avgCostPerUnit, profitMargin, totalUnitsSold, totalRevenue };
+  }, [product, builds, salesHistory]);
 
   // Handlers
   const handleDeleteProduct = async (returnStock: boolean) => {
@@ -227,9 +271,9 @@ export default function ProductDetailsPage() {
           </div>
         </div>
         <div className="flex items-center gap-2 flex-shrink-0">
-          <Button variant="outline" size="sm" onClick={() => router.push(`/app/products/${product.id}/manufacture`)}><Hammer className="h-4 w-4 mr-2" />Add New Stock</Button>
-          <Button variant="outline" asChild><Link href={`/app/products/${id}/edit`}><Edit3 className="mr-2 h-4 w-4" />Edit</Link></Button>
-          <Button variant="destructive" onClick={() => setIsDeleteProductDialogOpen(true)}><Trash2 className="mr-2 h-4 w-4" />Delete</Button>
+          <Button asChild><Link href={`/app/products/${product.id}/manufacture`}><Hammer className="h-4 w-4 mr-2" />Log Build</Link></Button>
+          <Button variant="outline" asChild><Link href={`/app/products/${id}/edit`}><Edit3 className="h-4 w-4" />Edit</Link></Button>
+          <Button variant="destructive" onClick={() => setIsDeleteProductDialogOpen(true)}><Trash2 className="h-4 w-4" /></Button>
         </div>
       </div>
 
@@ -241,18 +285,19 @@ export default function ProductDetailsPage() {
             <div className="text-center p-4 bg-slate-50 rounded-lg"><p className="text-sm text-muted-foreground">Available Stock</p><p className="text-4xl font-bold text-primary">{product.current_stock.toLocaleString()}</p></div>
             <DetailStat label="Stock Value (COGS)" value={FormatCurrency(analytics.stockValueCOGS)} />
             <DetailStat label="Total Units Ever Built" value={analytics.totalUnitsBuilt} />
-            <DetailStat label="Value of Stocks with Selling Price" value={FormatCurrency(analytics.totalUnitsBuilt * (product.selling_price || 0))} />
+            <DetailStat label="Total Units Ever Sold" value={analytics.totalUnitsSold} />
           </CardContent>
         </Card>
         <Card>
-          <CardHeader><CardTitle className="flex items-center gap-2"><Tags className="h-5 w-5" />Pricing</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="flex items-center gap-2"><Tags className="h-5 w-5" />Pricing & Revenue</CardTitle></CardHeader>
           <CardContent className="space-y-3">
             <div className="text-center p-4 bg-slate-50 rounded-lg"><p className="text-sm text-muted-foreground">Selling Price</p><p className="text-4xl font-bold text-primary">{FormatCurrency(product.selling_price || 0)}</p></div>
+            <DetailStat label="Total Revenue (All Time)" value={FormatCurrency(analytics.totalRevenue)} />
             <DetailStat label="Material Cost (COGS)" value={FormatCurrency(product.recipe_cost)} />
             <DetailStat label="Profit Margin" value={`${analytics.profitMargin.toFixed(1)}%`} />
           </CardContent>
           <CardFooter className="p-4 bg-amber-50 border-t">
-            <div className="flex items-start gap-2 text-amber-800"><Lightbulb className="h-4 w-4 mt-0.5 shrink-0" /><p className="text-xs">Suggested Price is <span className="font-semibold">{FormatCurrency(product.recipe_cost * 2.5)}</span> based on a 2.5x markup of material cost.</p></div>
+            <div className="flex items-start gap-2 text-amber-800"><Lightbulb className="h-4 w-4 mt-0.5 shrink-0" /><p className="text-xs">Suggested Price is <span className="font-semibold">{FormatCurrency(product.recipe_cost * 2.5)}</span> based on a 2.5x markup.</p></div>
           </CardFooter>
         </Card>
         <Card>
@@ -265,16 +310,17 @@ export default function ProductDetailsPage() {
         </Card>
       </div>
 
-      {/* --- DETAILS & BUILDS --- */}
-      <div className="grid grid-cols-2 lg:grid-cols-2 gap-6">
-        <Card><CardHeader><CardTitle className="flex items-center gap-2"><FlaskConical className="h-5 w-5" />Linked Recipe</CardTitle></CardHeader><CardContent>{product.recipe ? (<Link href={`/app/recipes/${product.recipe.recipe.id}`} className="font-medium text-primary hover:underline">{product.recipe.recipe.name}</Link>) : (<p className="text-sm text-muted-foreground">No recipe linked.</p>)}</CardContent></Card>
-        {product.notes && (<Card><CardHeader><CardTitle className="flex items-center gap-2"><StickyNote className="h-5 w-5" />Notes</CardTitle></CardHeader><CardContent><p className="text-sm text-muted-foreground whitespace-pre-wrap">{product.notes}</p></CardContent></Card>)}
+      {/* --- DETAILS & HISTORY --- */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 space-y-6">
+          <BuildHistoryList builds={builds} onDelete={(buildId) => setBuildToDeleteId(buildId)} />
+          <SalesHistoryList history={salesHistory} />
+        </div>
+        <div className="lg:col-span-1 space-y-6">
+          <Card><CardHeader><CardTitle className="flex items-center gap-2"><FlaskConical className="h-5 w-5" />Linked Recipe</CardTitle></CardHeader><CardContent>{product.recipe ? (<Link href={`/app/recipes/${product.recipe.recipe.id}`} className="font-medium text-primary hover:underline">{product.recipe.recipe.name}</Link>) : (<p className="text-sm text-muted-foreground">No recipe linked.</p>)}</CardContent></Card>
+          {product.notes && (<Card><CardHeader><CardTitle className="flex items-center gap-2"><StickyNote className="h-5 w-5" />Notes</CardTitle></CardHeader><CardContent><p className="text-sm text-muted-foreground whitespace-pre-wrap">{product.notes}</p></CardContent></Card>)}
+        </div>
       </div>
-      <div className="grid grid-cols-2 lg:grid-cols-2 gap-6">
-        <BuildHistoryList builds={builds} onDelete={(buildId) => setBuildToDeleteId(buildId)} />
-        <Card><CardHeader><CardTitle>Sales History</CardTitle></CardHeader><CardContent className="text-center text-muted-foreground py-12"><p>Sales tracking is coming soon!</p></CardContent></Card>
-      </div>
-
     </div>
   );
 }

@@ -23,6 +23,7 @@ import {
   LucideActivity,
   LucideUser,
   LucideListChecks,
+  LucideActivitySquare,
 } from 'lucide-react';
 import { UseUserContext } from "@/lib/context/GlobalContext";
 import { NewSPASassClient } from "@/lib/supabase/client";
@@ -45,12 +46,15 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     { name: 'Recipes', href: '/app/recipes', icon: CookingPot },
     { name: 'Products', href: '/app/products', icon: StoreIcon },
     { name: 'Sales', href: '/app/sales', icon: LucideActivity },
+    { name: 'Reports', href: '/app/reports', icon: LucideActivitySquare },
+  ];
 
+  const navs2 = [
     { name: 'Profile', href: '/app/profile', icon: LucideUser },
-    { name: 'Support', href: '/docs/support', icon: LucideHeartPulse },
+    { name: 'Support', href: 'https://github.com/oliklab/makers-ledger/issues', icon: LucideHeartPulse },
     { name: 'Documentation', href: '/docs/documentation', icon: LucideBook },
     { name: 'Lanidng Page', href: '/', icon: DoorOpen },
-  ];
+  ]
 
   const handleLogout = async () => {
     try {
@@ -118,6 +122,32 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 {item.name}
               </Link>
             );
+
+          })}
+        </nav>
+        <br />
+        <hr />
+
+        <nav className="mt-4 px-2 space-y-1">
+          {navs2.map((item) => {
+            const isActive = pathname === item.href;
+            return (
+              <Link
+                key={item.name}
+                href={item.href}
+                className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md ${isActive
+                  ? 'bg-primary-50 text-primary-600'
+                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                  }`}
+              >
+                <item.icon
+                  className={`mr-3 h-5 w-5 ${isActive ? 'text-primary-500' : 'text-gray-400 group-hover:text-gray-500'
+                    }`}
+                />
+                {item.name}
+              </Link>
+            );
+
           })}
         </nav>
 

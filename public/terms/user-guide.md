@@ -4,127 +4,144 @@
 
 Hello, and welcome to your new command center! Maker's Ledger was built for one reason: to take the headache out of the most complicated part of running a craft business. We help you answer the two most important questions: "How much does it *really* cost to make my products?" and "Am I actually making a profit?"
 
-This guide will walk you through every feature of the app. Let's get started!
+This guide will walk you through every feature of the app, explaining not just *what* to do, but *why* it helps you build a more profitable and sustainable business. Let's get started!
 
 ---
 
-## Part 1: Getting Started
+## Part 1: Your Dashboard & Navigation
 
-### Signing Up
-Creating your account is the first step. All you need is a valid email address. Once you sign up and confirm your email, you'll be taken to your main Dashboard.
+The Dashboard is your home base, designed to give you a quick, at-a-glance overview of your business's health. From the main navigation menu, you can access the five key areas of the app, each designed for a specific purpose:
 
-### Your Dashboard
-The Dashboard is your home base. It's designed to give you a quick overview of your business. From the main navigation, you can access the four key areas of the app:
-* **Materials:** Where you manage your raw supplies.
-* **Products:** Where you create recipes and see your finished goods.
-* **Orders:** Where you log sales and track profits.
-* **Reports:** Where you see the bigger picture of your business performance.
+* **Materials:** Your digital storeroom. This is the foundation where you'll manage every raw supply you own, from bulk wax to the smallest decorative ribbon.
+* **Purchases:** Your financial logbook for supplies. Track every supply run and order from your suppliers to maintain an accurate history of your expenses.
+* **Recipes:** Your digital cookbook. This is where you define the precise ingredients and quantities needed to create each of your unique products.
+* **Products:** Your finished goods inventory. Here you can see the items ready for sale, track your stock levels, and log new manufacturing runs.
+* **Sales:** Your order book and profit center. This is where you'll log customer sales, track your revenue, and see your real-time profitability.
 
 ---
 
-## Part 2: Managing Your Materials
+## Part 2: Managing Your Materials (`/app/materials`)
 
-This is the foundation of everything in Maker's Ledger. Accurately tracking your materials is the key to knowing your true costs.
+This is the foundation of everything in Maker's Ledger. Accurately tracking your materials is the absolute key to knowing your true costs and pricing your products with confidence.
 
 ### How to Add a New Raw Material
-Let's say you're a candle maker and you just bought a 5-kilogram block of soy wax. Here's how you'd add it:
+
+Let's say you're a candle maker and you just bought a 5-kilogram block of soy wax for €40. Here's how you'd add it:
 
 1.  Navigate to the **Materials** section and click the "Add New Material" button.
-2.  Fill out the form:
+2.  Fill out the form with care:
     * **Material Name:** `Soy Wax`
-    * **Purchase Quantity:** `5`
-    * **Purchase Unit:** Select `kg` (kilograms) from the dropdown.
-    * **Crafting Unit:** Select `g` (grams). This is the crucial step! It tells the app how you actually *use* the material in your recipes.
-    * **Total Cost:** Enter the total amount you paid, for example, `€40`.
-3.  Click "Save Material".
+    * **SKU:** (Optional but recommended) `WAX-SOY-01`
+    * **Purchase Unit:** `kg`. This is crucial because it's how your supplier sells it to you.
+    * **Crafting Unit:** `g`. This is even more crucial! It tells the app how you actually *use* the material in your recipes. The conversion is the secret sauce.
+    * **Conversion Factor:** `1000`. The app needs to know there are 1000 grams in a kilogram.
+    * **Initial Purchase Quantity:** `5000`. You must enter the total quantity in your chosen *crafting unit*.
+    * **Total Initial Cost:** `40`. Enter the final price you paid, including any shipping or taxes, to get your true cost.
 
-**What Happens Next? The Magic!**
+**The Magic Moment!**
 Maker's Ledger automatically does the math for you. It knows that 5kg is 5000g. It then divides the total cost by the total crafting units:
 
 `€40 / 5000g = €0.008 per gram`
 
-This "Cost per Crafting Unit" is now stored and will be used to calculate your product costs with perfect accuracy.
+This `avg_cost` (average cost) is now stored. It's a "moving average," which means it will automatically and accurately recalculate every time you log a new purchase at a different price. This ensures your product costing is always based on the true, up-to-date value of your inventory.
 
 ### Viewing and Managing Your Inventory
-In the Materials section, you'll see a list of all your supplies. This table shows you:
-* The material name.
-* The current stock level (in your chosen crafting unit).
-* The calculated average cost per crafting unit.
 
-From here, you can easily **edit** a material's name or units, or **delete** it entirely.
+In the Materials section, you'll see a list of all your supplies in a compact card format. For each material, you can see at a glance:
+* The material name and SKU, which is a clickable link that takes you directly to its **Details Page**.
+* The current stock level, always shown in your crafting unit for easy reference.
+* The calculated average cost per crafting unit, so you always know your base cost.
+* The total wholesale value of your current stock on hand.
 
-### Logging a New Supply Purchase
-You've run low on Soy Wax and bought another 5kg block, but this time it cost €45. No problem!
+### Material Details Page (`/app/materials/[id]`)
 
-1.  Find "Soy Wax" in your materials list.
-2.  Click the "Add Stock" button.
-3.  Enter the new purchase details (5kg for €45).
-
-The app will automatically update your stock levels and, importantly, **recalculate the average cost** of your Soy Wax, ensuring your product costing remains accurate even when supplier prices change.
+Clicking on any material name takes you to its dedicated details page. This is your deep-dive view, where you can find:
+* In-depth statistics about its cost, current value, and purchase history over time.
+* A complete **Purchase History** table, allowing you to track how the price from your suppliers has changed over time.
+* A detailed **Usage History**, showing every single product build that has consumed this material. This helps you identify your most popular and important ingredients.
 
 ---
 
-## Part 3: Creating Your Products & Recipes
+## Part 3: Creating Recipes (`/app/recipes`)
 
-A "Recipe" (also known as a Bill of Materials) is simply the list of ingredients you use to make one finished product.
+A "Recipe" is the formula for your products. It's simply the list of specific ingredients and their exact quantities that you use to make one finished product or a single batch.
 
-### How to Create a Product Recipe
+### How to Create a Recipe
+
 Let's create a recipe for a "Lavender Fields Candle".
 
-1.  Navigate to the **Products** section and click "Create New Product".
-2.  Give your product a name: `Lavender Fields Candle`.
-3.  Click "Add Material to Recipe". A list of the materials from your inventory will appear.
-4.  Select `Soy Wax` and enter the amount you use for one candle, for example, `200` (grams).
-5.  Select `Candle Wick` and enter `1` (piece).
-6.  Select `Lavender Essential Oil` and enter `10` (ml).
+1.  Navigate to the **Recipes** section and click "New Recipe".
+2.  Fill out the recipe details:
+    * **Recipe Name:** `Lavender Fields Candle`
+    * **Yield Quantity:** `1` (How many sellable items this recipe produces)
+    * **Yield Unit:** `Candle`
+3.  Click "Add Ingredient" to start adding materials from your inventory.
+4.  Select `Soy Wax` from your materials list and enter the precise amount you use for one candle, for example, `200` (in grams, its crafting unit).
+5.  Add another ingredient: `Candle Wick`, Quantity: `1`.
+6.  Add a final ingredient: `Lavender Oil`, Quantity: `10` (in ml).
+7.  Click "Save Recipe".
 
-As you add each material, you will see the **Total Material Cost** for this product calculate in real-time. This is your **Cost of Goods Sold (COGS)**. Once you're done, click "Save Product".
+The app doesn't save a fixed cost on the recipe itself. Instead, it will **dynamically calculate** the recipe's total cost in real-time by fetching the current `avg_cost` of each ingredient from your materials inventory. This is a powerful feature that ensures your product costs are always up-to-date, protecting your profits even when supplier prices fluctuate.
 
 ---
 
-## Part 4: Tracking Production & Sales
+## Part 4: Tracking Products & Manufacturing (`/app/products`)
 
-Now that you have materials and recipes, you can track the entire lifecycle of your products.
+Products are your finished, sellable goods. Each product is created by linking it to a recipe, which serves as its manufacturing blueprint.
 
-### Logging a Production Run
-You just spent the afternoon making a batch of 10 Lavender Fields Candles.
+### How to Create a New Product
 
-1.  Go to the **Products** section.
-2.  Find your "Lavender Fields Candle" and click "Log Production".
-3.  Enter the quantity you made: `10`.
+1.  Navigate to the **Products** page and click "New Product".
+2.  Fill in the details:
+    * **Product Name:** `Large Lavender Candle`
+    * **SKU:** `LAV-CAN-LG`
+    * **Recipe:** Select "Lavender Fields Candle" from the dropdown. This links the product to its ingredient list and cost.
+    * **Selling Price:** Enter the final price you will sell the product for, e.g., `25`.
+3.  Click "Save Product".
 
-The app now does two things automatically:
-1.  It deducts all the required raw materials from your **Materials Inventory** (e.g., 2000g of wax, 10 wicks, etc.).
-2.  It adds `10` to your "Lavender Fields Candle" **Finished Goods Stock**.
+On the product list, you'll see a **Guide Price** suggestion. This is a helpful benchmark calculated by applying a standard markup (e.g., 2.5x) to your recipe's real-time material cost. It's a great starting point, which you can adjust based on your labor, overhead, and brand positioning.
+
+### Logging a Manufacturing Run
+
+You just spent the afternoon making a batch of 12 Lavender Candles. This is called a "build" or a "manufacturing run."
+
+1.  Go to the **Products** page and find your "Large Lavender Candle".
+2.  Click the "Log Build" button, which takes you to the dedicated manufacturing page.
+3.  Select the number of batches you made. If your recipe yields 1 candle, you'd select "12 batches". The form will confirm that this action will produce **12 Candles**.
+4.  Click "Confirm Build".
+
+The app's transactional SQL function now does two things safely and automatically:
+1.  It deducts all required raw materials from your **Materials Inventory** (in this case, 2400g of wax, 12 wicks, etc.).
+2.  It adds `12` to your "Large Lavender Candle" **Finished Goods Stock**. Your inventory is now perfectly in sync.
+
+---
+
+## Part 5: Tracking Sales (`/app/sales`)
+
+This is where you see your hard work pay off by turning inventory into revenue.
 
 ### Logging a Sale
-You sold one of your new candles at a market for €15!
 
-1.  Navigate to the **Orders** section and click "Log New Sale".
-2.  Select the "Lavender Fields Candle" from your product list.
-3.  Enter the quantity sold: `1`.
-4.  Enter the price you sold it for: `€15`.
-5.  Click "Save Sale".
+You sold one of your new candles at a market for €25!
 
-**The Profit Moment!**
-The app instantly shows you the breakdown for this sale:
-* **Revenue:** `€15.00`
-* **Cost of Goods Sold (COGS):** `€2.50` (or whatever the calculated recipe cost was)
-* **Gross Profit:** `€12.50`
+1.  Navigate to the **Sales** page and click "New Sale".
+2.  Enter the `Sale Date` and any `Customer Details`.
+3.  Add a line item and select "Large Lavender Candle" from your product list.
+4.  Enter the `Quantity`: `1`, and confirm the `Price / Unit` is `25`.
+5.  Select the **Status**. This is a critical step!
+    * **Save as Draft:** This saves the order but **does not** affect your product stock. Use this for quotes, unconfirmed orders, or invoices you're preparing.
+    * **Complete Sale:** This will create the sale and **immediately deduct the stock** from your finished product inventory. This is the final step for a confirmed, paid order.
+6.  Click "Create & Complete Sale".
 
-Simultaneously, the app deducts `1` from your "Lavender Fields Candle" finished goods stock. You now have a perfect, real-time view of your entire business.
+### The Profit Moment!
 
----
+Navigate to the sale's details page by clicking on it from the sales list. You'll see an instant, clear breakdown of this transaction's profitability:
+* **Total Revenue:** `€25.00`
+* **Cost of Goods Sold (COGS):** The exact material cost of the product *at the time of the sale*, captured for perfect historical accuracy.
+* **Profit:** The simple, powerful number showing the difference between your revenue and COGS.
+* **Profit Margin:** Your profit expressed as a percentage of revenue, the key indicator of your pricing strategy's success.
 
-## Part 5: Reports & Account Management
-
-### Reports
-The **Reports** section gives you a high-level view of your sales performance over different time periods, allowing you to track your total revenue and profitability.
-
-### Account Management
-In your account settings, you can easily:
-* Change your password.
-* Upgrade, downgrade, or cancel your subscription plan at any time.
+Simultaneously, the app deducts `1` from your "Large Lavender Candle" finished goods stock. You now have a perfect, real-time view of your entire business, from raw materials to cash in hand.
 
 ---
 
@@ -141,7 +158,7 @@ In your account settings, you can easily:
 
 ## Need Help?
 
-If you have any questions or run into any issues, we're here to help. Please don't hesitate to reach out to our support team at **support@mledger.oliklab.com**.
+If you have any questions or run into any issues, we're here to help. Please don't hesitate to reach out to our support team at **kzirtm@gmail.com**.
 
 Happy making!
 
