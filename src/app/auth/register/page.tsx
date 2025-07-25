@@ -225,7 +225,7 @@ export default function RegisterPage() {
                 </Link>{' '}
                 and{' '}
                 <Link
-                  href="/legal/privacy"
+                  href="/docs/privacy"
                   className="font-medium text-primary-600 hover:text-primary-500"
                   target="_blank"
                 >

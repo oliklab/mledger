@@ -21,6 +21,7 @@
     "@radix-ui/react-slot": "^1.2.3",
     "@radix-ui/react-toast": "^1.2.14",
     "@radix-ui/react-tooltip": "^1.2.7",
+    "@stripe/stripe-js": "^7.6.1",
     "@supabase/ssr": "^0.5.2",
     "@supabase/supabase-js": "^2.47.10",
     "@types/md5": "^2.3.5",
@@ -39,6 +40,7 @@
     "react-dom": "^19.1.0",
     "react-markdown": "^9.0.3",
     "recharts": "^2.15.0",
+    "stripe": "^18.3.0",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7"
   },

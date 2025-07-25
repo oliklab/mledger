@@ -6,8 +6,20 @@ export type AuthUser = {
   id: string;
   registered_at: Date;
   profile: UserProfile;
+  subscription?: Subscription;
 };
 
+export type Subscription = {
+  id: string;
+  user_id: string;
+  stripe_customer_id: string;
+  stripe_subscription_id: string;
+  status: string;
+  price_id: string;
+  current_period_end: Date;
+  created_at: Date;
+  updated_at: Date;
+}
 
 export class AuthStore {
   private store: SaasClient;
@@ -31,11 +43,18 @@ export class AuthStore {
       const profile = await new UserProfileStore(this.store).
         Read(authUser.id);
 
+      const { data: data, error: err } = await this.store.SupabaseClient().from('subscriptions')
+        .select('*')
+        .eq('user_id', authUser.id)
+        .single();
+      if (err) throw err;
+
       return {
         email: authUser.email!,
         id: authUser.id,
         registered_at: new Date(authUser.created_at),
         profile: profile,
+        subscription: data as Subscription,
       } as AuthUser;
     }
     throw 'error: user profile not found';
