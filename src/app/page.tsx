@@ -180,6 +180,11 @@ export default function Home() {
                     Documentation
                   </Link>
                 </li>
+                <li>
+                  <Link href="https://github.com/oliklab/makers-ledger/issues" className="text-gray-600 hover:text-gray-900">
+                    Report Issues
+                  </Link>
+                </li>
               </ul>
             </div>
             <div>
