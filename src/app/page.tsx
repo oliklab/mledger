@@ -53,7 +53,7 @@ export default function Home() {
     {
       icon: NotebookText,
       title: 'Automated Product Costing',
-      description: 'Instantly know your Cost of Goods Sold (COGS). Define a product\'s "recipe" once, and the app automatically calculates its exact material cost.',
+      description: 'Instantly know your Cost of Goods Sold (COGS). Define a product\'s "recipe" once.',
       color: 'text-orange-600'
     },
     {
@@ -94,22 +94,27 @@ export default function Home() {
         </div>
       </nav>
 
-      <section className="relative pt-32 pb-24 text-center overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section
+        className="relative pt-32 pb-24 text-center overflow-hidden bg-cover bg-center"
+        style={{ backgroundImage: `url('/landing-hero.png')` }}
+      >
+        {/* Semi-transparent overlay for text readability */}
+        <div className="absolute inset-0 bg-white/80 backdrop-blur-sm"></div>
+
+        {/* Content container */}
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="text-5xl md:text-6xl font-bold tracking-tight text-slate-900">
             The Business Side of Making,
             <span className="block text-primary-600">Simplified.</span>
           </h1>
           <p className="mt-6 text-xl text-gray-600 max-w-3xl mx-auto">
-            Maker's Ledger is the all-in-one inventory and bookkeeping software
-            designed to bring clarity to your craft business. Stop guessing at
-            your costs and start pricing with confidence.
+            Maker's Ledger is the all-in-one inventory and bookkeeping software designed to bring clarity to your craft business. Stop guessing at your costs and start pricing with confidence.
           </p>
           <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
             <AuthAwareButtons />
           </div>
           <p className="mt-4 text-sm font-semibold text-gray-500">
-            30-Day Free Trial &nbsp;•&nbsp; Cancel Anytime &nbsp;•&nbsp; From $4.5 per Month.
+            30-Day Free Trial &nbsp;•&nbsp; Cancel Anytime &nbsp;•&nbsp; From $4.5 Per Month.
           </p>
 
           <div className="mt-20 max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10 text-left">
@@ -138,7 +143,7 @@ export default function Home() {
               <CheckCircle className="h-6 w-6 text-green-500 flex-shrink-0 mt-1" />
               <div>
                 <h3 className="text-lg font-semibold text-slate-800">Grow with Confidence</h3>
-                <p className="mt-1 text-gray-600">With a clear view of your production costs and profitability, you can scale your business, manage your finances, and turn your passion into a thriving venture all for the price of a cup of coffee.</p>
+                <p className="mt-1 text-gray-600">With a clear view of your production costs and profitability, you can scale your business, manage your finances, and turn your passion into a thriving venture.</p>
               </div>
             </div>
           </div>
@@ -253,7 +258,7 @@ export default function Home() {
           </div>
           <div className="mt-8 pt-8 border-t border-gray-200">
             <p className="text-center text-gray-600">
-              © {new Date().getFullYear()} {productName}. All rights reserved.
+              © {new Date().getFullYear()} Olik Software Lab. All rights reserved.
             </p>
           </div>
         </div>
