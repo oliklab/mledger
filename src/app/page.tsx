@@ -87,7 +87,7 @@ export default function Home() {
               The simple app for makers to track materials, calculate exact product costs, and understand their profit.
             </p>
             <p className="mt-4 text-lg font-semibold text-gray-800">
-              30 Days Free Trial, Cancel Anytime.
+              30 Days Free Trial, Cancel Anytime. Only $4.5 Per Month.
             </p>
             <div className="mt-10 flex gap-4 justify-center">
 
