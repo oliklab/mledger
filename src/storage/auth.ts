@@ -46,6 +46,7 @@ export class AuthStore {
       const { data: data, error: err } = await this.store.SupabaseClient().from('subscriptions')
         .select('*')
         .eq('user_id', authUser.id)
+        .order('created_at', { ascending: false })
         .single();
 
       return {

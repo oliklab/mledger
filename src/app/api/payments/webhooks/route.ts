@@ -63,6 +63,8 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     status: subscription.status,
     price_id: subscription.items.data[0].price.id,
     current_period_end: new Date(subscription.items.data[0].current_period_end * 1000).toISOString(),
+  }, {
+    onConflict: 'user_id',
   });
 }
 
