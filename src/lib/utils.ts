@@ -1,3 +1,4 @@
+import { Subscription } from "@/storage/auth";
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 
@@ -45,4 +46,23 @@ export const IsThisWeek = (dateString: string): boolean => {
   endOfWeek.setHours(23, 59, 59, 999); // Set to the end of Saturday
 
   return purchaseDate >= startOfWeek && purchaseDate <= endOfWeek;
+};
+
+/**
+ * Checks if a subscription object represents an active plan.
+ * A subscription is considered active if its status is 'active' or 'trialing'.
+ * @param subscription The user's subscription object.
+ * @returns True if the subscription is active, false otherwise.
+ */
+export const HasActiveSubscription = (subscription: Subscription | null | undefined): boolean => {
+  // If there's no subscription object or it lacks a status, it's not active.
+  if (!subscription?.status) {
+    return false;
+  }
+
+  // Define the list of statuses that we consider "active".
+  const activeStatuses = ['active', 'trialing'];
+
+  // Check if the subscription's status is in our list of active statuses.
+  return activeStatuses.includes(subscription.status);
 };

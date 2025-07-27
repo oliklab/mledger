@@ -87,7 +87,7 @@ export default function Home() {
               The simple app for makers to track materials, calculate exact product costs, and understand their profit.
             </p>
             <p className="mt-4 text-lg font-semibold text-gray-800">
-              Coming soon! Get ready to take control of your craft business.
+              30 Days Free Trial, Cancel Anytime.
             </p>
             <div className="mt-10 flex gap-4 justify-center">
 
@@ -148,7 +148,7 @@ export default function Home() {
             href="/auth/register"
             className="mt-8 inline-flex items-center px-6 py-3 rounded-lg bg-white text-primary-600 font-medium hover:bg-primary-50 transition-colors"
           >
-            Get Started Now
+            Get Started Now with 30 Days Free Trial
             <ArrowRight className="ml-2 h-5 w-5" />
           </Link>
         </div>

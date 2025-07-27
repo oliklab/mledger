@@ -20,7 +20,7 @@ import { AnalyticsCard } from '@/components/AnalyticsCard';
 import { Skeleton } from '@/components/ui/skeleton';
 
 // Utils and Icons
-import { FormatCurrency, IsThisMonth, FormatDate } from '@/lib/utils';
+import { FormatCurrency, IsThisMonth, FormatDate, HasActiveSubscription } from '@/lib/utils';
 import {
   Loader2,
   AlertCircle,
@@ -35,7 +35,8 @@ import {
   FileText,
   AlertTriangle,
   ArrowRight,
-  CalendarDays // Added
+  CalendarDays, // Added
+  CreditCard
 } from 'lucide-react';
 
 export default function DashboardPage() {
@@ -133,6 +134,8 @@ export default function DashboardPage() {
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   }, [user]);
 
+
+  const hasActiveSubscription = useMemo(() => HasActiveSubscription(user?.subscription), [user]);
   if (initialLoading) {
     return <div className="p-8"><Skeleton className="h-screen w-full" /></div>;
   }
@@ -146,6 +149,20 @@ export default function DashboardPage() {
           Welcome back! Here's a snapshot of your business activity for {new Date().toLocaleString('en-IE', { month: 'long', year: 'numeric' })}.
         </p>
       </div>
+
+      {/* --- SUBSCRIPTION ALERT --- */}
+      {!hasActiveSubscription && (
+        <Alert>
+          <CreditCard className="h-4 w-4" />
+          <AlertTitle>Please Subscribe</AlertTitle>
+          <AlertDescription className="flex items-center justify-between">
+            You do not have any active Subscription. Upgrade to unlock all features.
+            <Button asChild size="sm">
+              <Link href="/app/payments">View Plans <ArrowRight className="ml-2 h-4 w-4" /></Link>
+            </Button>
+          </AlertDescription>
+        </Alert>
+      )}
 
       {error && <Alert variant="destructive"><AlertCircle className="h-4 w-4" /><AlertDescription>{error}</AlertDescription></Alert>}
 

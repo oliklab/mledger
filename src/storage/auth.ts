@@ -47,7 +47,6 @@ export class AuthStore {
         .select('*')
         .eq('user_id', authUser.id)
         .single();
-      if (err) throw err;
 
       return {
         email: authUser.email!,
