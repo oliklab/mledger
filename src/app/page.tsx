@@ -1,18 +1,54 @@
 import React from 'react';
 import Link from 'next/link';
-import { ArrowRight, Globe, Shield, Users, Key, Database, Clock, AlertTriangle, Boxes, NotebookText, PackageMinus, TrendingUp, ShoppingCart } from 'lucide-react';
+import { ArrowRight, Globe, Shield, Users, Key, Database, Clock, AlertTriangle, Boxes, NotebookText, PackageMinus, TrendingUp, ShoppingCart, Hammer, CheckCircle } from 'lucide-react';
 import AuthAwareButtons from '@/components/AuthAwareButtons';
 import HomePricing from "@/components/HomePricing";
 
 export default function Home() {
-  const productName = process.env.NEXT_PUBLIC_PRODUCTNAME;
+  const productName = process.env.NEXT_PUBLIC_PRODUCTNAME || 'Makers Ledger';
 
   const features = [
     {
       icon: Boxes,
       title: 'Smart Material Inventory',
-      description: 'Easily log all your raw materials, from yarn skeins to sheets of leather. Buy in bulk (e.g., skeins, meters) and the app tracks inventory in the exact units you craft with (e.g., grams, cm).',
+      description: 'Easily log all your raw materials, from yarn skeins to sheets of leather.',
       color: 'text-green-600'
+    },
+    {
+      icon: ShoppingCart,
+      title: 'Log Your Supplies',
+      description: 'Quickly record every material purchase, from bulk textiles to tiny beads. Track costs, suppliers, and quantities in one organized place.',
+      color: 'text-purple-600'
+    },
+    {
+      icon: Boxes,
+      title: 'From Bulk to Batch',
+      description: 'Buy in kilograms, use in grams. Our smart inventory automatically converts units, so your stock levels are always accurate for crafting.',
+      color: 'text-green-600'
+    },
+    {
+      icon: NotebookText,
+      title: 'Your Creative Cookbook',
+      description: "Define a 'recipe' for each product you make. List the exact materials and quantities, and we'll calculate the true cost of goods sold (COGS) in real-time.",
+      color: 'text-orange-600'
+    },
+    {
+      icon: Hammer,
+      title: 'Track Your Production',
+      description: 'Log a new manufacturing run with one click. We automatically add the finished goods to your product inventory and deduct the right materials from your supply stock.',
+      color: 'text-blue-600'
+    },
+    {
+      icon: TrendingUp,
+      title: 'Understand Your Profit',
+      description: 'Record each sale and instantly see the breakdown: revenue, material costs, and most importantly, your net profit per order.',
+      color: 'text-teal-600'
+    },
+    {
+      icon: AlertTriangle,
+      title: 'Never Run Out',
+      description: 'Set low-stock alerts on critical materials. Get notified before you run out, ensuring your production never has to stop.',
+      color: 'text-red-600'
     },
     {
       icon: NotebookText,
@@ -26,24 +62,6 @@ export default function Home() {
       description: 'Maintain perfect inventory accuracy. When you log a finished product, the required materials are instantly deducted from your stock.',
       color: 'text-red-600'
     },
-    {
-      icon: TrendingUp,
-      title: 'Sales & Profit Tracking',
-      description: 'Log sales to track revenue, costs, and net profit per order. Instantly identify your most profitable products.',
-      color: 'text-teal-600'
-    },
-    {
-      icon: ShoppingCart,
-      title: 'Simple Purchase Logging',
-      description: 'Keep costs accurate. Quickly log new supply purchases to update stock counts and automatically re-calculate average material costs.',
-      color: 'text-purple-600'
-    },
-    {
-      icon: AlertTriangle,
-      title: 'Low-Stock Alerts',
-      description: 'Avoid production delays. Set minimum inventory levels for key materials and receive alerts before you need to reorder.',
-      color: 'text-blue-600'
-    }
   ];
 
   const stats = [
@@ -76,22 +94,52 @@ export default function Home() {
         </div>
       </nav>
 
-      <section className="relative pt-32 pb-24 overflow-hidden">
+      <section className="relative pt-32 pb-24 text-center overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h1 className="text-5xl md:text-6xl font-bold tracking-tight">
-              Simple Ledger for Makers
-              <span className="block text-4xl md:text-5xl text-primary-600">With Confidence</span>
-            </h1>
-            <p className="mt-6 text-xl text-gray-600 max-w-3xl mx-auto">
-              The simple app for makers to track materials, calculate exact product costs, and understand their profit.
-            </p>
-            <p className="mt-4 text-lg font-semibold text-gray-800">
-              30 Days Free Trial, Cancel Anytime. Only $4.5 Per Month.
-            </p>
-            <div className="mt-10 flex gap-4 justify-center">
+          <h1 className="text-5xl md:text-6xl font-bold tracking-tight text-slate-900">
+            The Business Side of Making,
+            <span className="block text-primary-600">Simplified.</span>
+          </h1>
+          <p className="mt-6 text-xl text-gray-600 max-w-3xl mx-auto">
+            Maker's Ledger is the all-in-one inventory and bookkeeping software
+            designed to bring clarity to your craft business. Stop guessing at
+            your costs and start pricing with confidence.
+          </p>
+          <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
+            <AuthAwareButtons />
+          </div>
+          <p className="mt-4 text-sm font-semibold text-gray-500">
+            30-Day Free Trial &nbsp;•&nbsp; Cancel Anytime &nbsp;•&nbsp; From $4.5 per Month.
+          </p>
 
-              <AuthAwareButtons />
+          <div className="mt-20 max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10 text-left">
+            <div className="flex items-start gap-4">
+              <CheckCircle className="h-6 w-6 text-green-500 flex-shrink-0 mt-1" />
+              <div>
+                <h3 className="text-lg font-semibold text-slate-800">Master Your Inventory</h3>
+                <p className="mt-1 text-gray-600">Effortlessly track every component, from raw materials to finished goods. Get a real-time view of what you have on hand so you can plan production without surprises.</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-4">
+              <CheckCircle className="h-6 w-6 text-green-500 flex-shrink-0 mt-1" />
+              <div>
+                <h3 className="text-lg font-semibold text-slate-800">Know Your True Costs</h3>
+                <p className="mt-1 text-gray-600">Instantly see your Cost of Goods Sold (COGS) for every product. Monitor all your expenses to understand your exact profit margins and make smarter pricing decisions.</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-4">
+              <CheckCircle className="h-6 w-6 text-green-500 flex-shrink-0 mt-1" />
+              <div>
+                <h3 className="text-lg font-semibold text-slate-800">Never Run Out of Stock</h3>
+                <p className="mt-1 text-gray-600">Avoid costly delays and lost sales. Set low-stock alerts on your critical supplies so you know exactly when it's time to reorder.</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-4">
+              <CheckCircle className="h-6 w-6 text-green-500 flex-shrink-0 mt-1" />
+              <div>
+                <h3 className="text-lg font-semibold text-slate-800">Grow with Confidence</h3>
+                <p className="mt-1 text-gray-600">With a clear view of your production costs and profitability, you can scale your business, manage your finances, and turn your passion into a thriving venture all for the price of a cup of coffee.</p>
+              </div>
             </div>
           </div>
         </div>
@@ -148,7 +196,7 @@ export default function Home() {
             href="/auth/register"
             className="mt-8 inline-flex items-center px-6 py-3 rounded-lg bg-white text-primary-600 font-medium hover:bg-primary-50 transition-colors"
           >
-            Get Started Now with 30 Days Free Trial
+            Get Started Now with 30 Day Free Trial
             <ArrowRight className="ml-2 h-5 w-5" />
           </Link>
         </div>
