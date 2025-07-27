@@ -217,7 +217,7 @@ export default function RegisterPage() {
               <label htmlFor="terms" className="text-gray-600">
                 I agree to the{' '}
                 <Link
-                  href="/legal/terms"
+                  href="/docs/terms"
                   className="font-medium text-primary-600 hover:text-primary-500"
                   target="_blank"
                 >

@@ -52,20 +52,57 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({ received: true });
 }
 
-async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
-  const subscription = await stripe.subscriptions.retrieve(session.subscription as string);
-  const userId = subscription.metadata!.supabase_user_id;
+// async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
+//   const subscription = await stripe.subscriptions.retrieve(session.subscription as string);
+//   const userId = subscription.metadata!.supabase_user_id;
 
-  await supabaseAdmin.from('subscriptions').upsert({
+//   await supabaseAdmin.from('subscriptions').upsert({
+//     user_id: userId,
+//     stripe_customer_id: session.customer as string,
+//     stripe_subscription_id: subscription.id,
+//     status: subscription.status,
+//     price_id: subscription.items.data[0].price.id,
+//     current_period_end: new Date(subscription.items.data[0].current_period_end * 1000).toISOString(),
+//   });
+// }
+
+async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
+  const subscription = await stripe.subscriptions.retrieve(
+    session.subscription as string
+  );
+
+  // Get the user ID from the subscription's metadata
+  const userId = subscription.metadata.supabase_user_id;
+
+  // Add a guard clause to ensure the user ID exists.
+  // If it doesn't, we throw an error so Stripe will retry the webhook.
+  if (!userId) {
+    throw new Error("Webhook Error: supabase_user_id not found in subscription metadata.");
+  }
+
+  const subscriptionData = {
     user_id: userId,
     stripe_customer_id: session.customer as string,
     stripe_subscription_id: subscription.id,
     status: subscription.status,
     price_id: subscription.items.data[0].price.id,
     current_period_end: new Date(subscription.items.data[0].current_period_end * 1000).toISOString(),
-  }, {
-    onConflict: 'user_id',
-  });
+  };
+
+  const { error } = await supabaseAdmin
+    .from('subscriptions')
+    .upsert(subscriptionData, {
+      // This now works correctly because of the UNIQUE constraint you added.
+      onConflict: 'user_id'
+    });
+
+  if (error) {
+    console.error("Error upserting subscription data:", error);
+    // Throwing the error is important, as it signals to Stripe to retry the webhook.
+    throw error;
+  }
+
+  console.log(`Successfully processed subscription ${subscription.id} for user ${userId}`);
 }
 
 async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
