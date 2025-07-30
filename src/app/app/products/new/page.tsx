@@ -111,7 +111,7 @@ export default function NewProductPage() {
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back to Products
         </Button>
-        <h1 className="text-3xl font-bold tracking-tight text-gray-900">New Product</h1>
+        <h1 className="text-3xl font-bold tracking-tight text-gray-900">Create a New Product</h1>
         <p className="text-muted-foreground mt-1">Create a new sellable item by linking it to a recipe.</p>
       </div>
 

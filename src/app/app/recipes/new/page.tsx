@@ -151,7 +151,7 @@ export default function NewRecipePage() {
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back to Recipes
         </Button>
-        <h1 className="text-3xl font-bold tracking-tight text-gray-900">New Recipe</h1>
+        <h1 className="text-3xl font-bold tracking-tight text-gray-900">Create a New Recipe</h1>
         <p className="text-muted-foreground mt-1">Define the ingredients and quantities needed to create one batch of your product.</p>
       </div>
 

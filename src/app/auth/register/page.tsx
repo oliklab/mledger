@@ -7,6 +7,7 @@ import Link from 'next/link';
 import SSOButtons from "@/components/SSOButtons";
 import { UserProfile } from '@/storage/profiles';
 import { AuthStore } from '@/storage/auth';
+import { useToast } from '@/hooks/use-toast';
 
 export default function RegisterPage() {
   const [profile, setProfile] = useState<UserProfile>({} as UserProfile);
@@ -14,6 +15,7 @@ export default function RegisterPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const { toast } = useToast();
 
   const router = useRouter();
 
@@ -68,16 +70,17 @@ export default function RegisterPage() {
       const supabase = await NewSPASassClient();
       const authstore = new AuthStore(supabase).WithProfile(profile);
       const { error } = await authstore.SignUpWithDetails();
-      if (error) throw error;
-
+      if (error) {
+        throw error;
+      }
       router.push('/auth/verify-email');
-
     } catch (err: Error | unknown) {
       if (err instanceof Error) {
         setError(err.message);
       } else {
         setError('An unknown error occurred');
       }
+      router.push('/auth/login');
     } finally {
       setLoading(false);
     }

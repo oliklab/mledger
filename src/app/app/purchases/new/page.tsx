@@ -156,7 +156,7 @@ export default function NewPurchasePage() {
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back
         </Button>
-        <h1 className="text-3xl font-bold tracking-tight text-gray-900">New Purchase</h1>
+        <h1 className="text-3xl font-bold tracking-tight text-gray-900">Log a New Purchase</h1>
         <p className="text-muted-foreground mt-1">Group multiple material purchases into a single order.
           This will update your Material's Stocks and will Calculate the inventory and its current average cost.
         </p>

@@ -4,17 +4,16 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { DateRange } from "react-day-picker";
-// 👇 MODIFIED: Using specific imports for date-fns functions
-import { addDays } from 'date-fns/addDays';
-import { format } from 'date-fns/format';
+import { addDays, format } from 'date-fns';
 import jsPDF from "jspdf";
-import { autoTable } from "jspdf-autotable";
+import autoTable from 'jspdf-autotable';
 
 // Supabase and Storage
 import { NewSPASassClient } from '@/lib/supabase/client';
 import { Material, MaterialStore } from '@/storage/materials';
 import { Product, ProductStore, ProductBuild } from '@/storage/products';
-import { SaleMetadata, SalesStore, SaleItem } from '@/storage/sales';
+import { SaleMetadata, SalesStore } from '@/storage/sales';
+import { RecipeMetadata, RecipeStore } from '@/storage/recipes';
 
 // UI Components
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
@@ -23,7 +22,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Skeleton } from '@/components/ui/skeleton';
-import { Archive } from 'lucide-react'; // Added Archive for empty state
+import { Archive } from 'lucide-react';
 
 // Utils and Icons
 import { FormatCurrency, FormatDate } from '@/lib/utils';
@@ -45,13 +44,16 @@ import {
 
 type ReportType = 'sales' | 'inventory' | 'manufacturing' | 'profit_loss';
 
+// Enhanced type for products used in reports
+type EnhancedProduct = Product & { recipe_cost: number };
+
 export default function ReportsPage() {
   const [initialLoading, setInitialLoading] = useState(true);
   const [error, setError] = useState('');
 
   // Data State
   const [materials, setMaterials] = useState<Material[]>([]);
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<EnhancedProduct[]>([]);
   const [builds, setBuilds] = useState<ProductBuild[]>([]);
   const [sales, setSales] = useState<SaleMetadata[]>([]);
 
@@ -66,14 +68,28 @@ export default function ReportsPage() {
   const loadData = useCallback(async () => {
     try {
       const supabase = await NewSPASassClient();
-      const [materialsData, productsData, buildsData, salesData] = await Promise.all([
+      const [materialsData, productsData, buildsData, salesData, recipesData] = await Promise.all([
         new MaterialStore(supabase).ReadAll(),
         new ProductStore(supabase).ReadAll(),
         new ProductStore(supabase).readAllBuilds(),
-        new SalesStore(supabase).ReadAllMetadata()
+        new SalesStore(supabase).ReadAllMetadata(),
+        new RecipeStore(supabase).ReadAllMetadata()
       ]);
+
+      const materialMap = new Map(materialsData.map(m => [m.id, m]));
+      const recipeMap = new Map(recipesData.map(r => [r.recipe.id, r]));
+
+      const enhancedProducts = productsData.map(product => {
+        const recipe = recipeMap.get(product.recipe_id);
+        const recipe_cost = recipe?.materials.reduce((sum, item) => {
+          const material = materialMap.get(item.material_id);
+          return material ? sum + (item.quantity * material.avg_cost) : sum;
+        }, 0) || 0;
+        return { ...product, recipe_cost };
+      });
+
       setMaterials(materialsData);
-      setProducts(productsData);
+      setProducts(enhancedProducts);
       setBuilds(buildsData);
       setSales(salesData);
     } catch (err: any) {
@@ -89,8 +105,9 @@ export default function ReportsPage() {
   const reportData = useMemo(() => {
     if (!selectedReport || !dateRange?.from || !dateRange?.to) return null;
 
-    const from = dateRange.from;
-    const to = dateRange.to;
+    const from = new Date(dateRange.from.setHours(0, 0, 0, 0));
+    const to = new Date(dateRange.to.setHours(23, 59, 59, 999));
+    const productMap = new Map(products.map(p => [p.id, p]));
 
     switch (selectedReport) {
       case 'sales':
@@ -105,14 +122,7 @@ export default function ReportsPage() {
           headers: ["Date", "Customer", "Items", "Revenue", "COGS", "Profit"],
           rows: filteredSales.map(s => {
             const cogs = s.items.reduce((sum, i) => sum + (i.quantity * i.cost_per_unit_at_sale), 0);
-            return [
-              FormatDate(s.sale.sale_date),
-              s.sale.customer_details || 'N/A',
-              s.items.length,
-              FormatCurrency(s.sale.total_amount),
-              FormatCurrency(cogs),
-              FormatCurrency(s.sale.total_amount - cogs)
-            ];
+            return [FormatDate(s.sale.sale_date), s.sale.customer_details || 'N/A', s.items.length, FormatCurrency(s.sale.total_amount), FormatCurrency(cogs), FormatCurrency(s.sale.total_amount - cogs)];
           }),
           summary: [
             { label: "Total Sales", value: filteredSales.length },
@@ -124,22 +134,63 @@ export default function ReportsPage() {
 
       case 'inventory':
         const totalMaterialValue = materials.filter(m => m.inventoryable).reduce((sum, m) => sum + (m.current_stock * m.avg_cost), 0);
+        const totalProductValue = products.reduce((sum, p) => sum + (p.current_stock * p.recipe_cost), 0);
         return {
-          title: "Inventory Snapshot",
+          title: "Inventory Snapshot Report",
           headers: ["Type", "SKU", "Name", "Available Stock", "Avg. Cost", "Stock Value (COGS)"],
           rows: [
             ...materials.filter(m => m.inventoryable).map(m => ["Material", m.sku || 'N/A', m.name, `${m.current_stock.toLocaleString()} ${m.crafting_unit}`, FormatCurrency(m.avg_cost), FormatCurrency(m.current_stock * m.avg_cost)]),
-            ...products.map(p => ["Product", p.sku || 'N/A', p.name, p.current_stock.toLocaleString(), "N/A", "N/A"])
+            ...products.map(p => ["Product", p.sku || 'N/A', p.name, p.current_stock.toLocaleString(), FormatCurrency(p.recipe_cost), FormatCurrency(p.current_stock * p.recipe_cost)])
           ],
           summary: [
-            { label: "Total Material Value", value: FormatCurrency(totalMaterialValue) }
+            { label: "Total Material Value", value: FormatCurrency(totalMaterialValue) },
+            { label: "Total Product Stock Value", value: FormatCurrency(totalProductValue) },
+            { label: "Total Inventory Value", value: FormatCurrency(totalMaterialValue + totalProductValue) },
+          ]
+        };
+
+      case 'manufacturing':
+        const filteredBuilds = builds.filter(b => {
+          const buildDate = new Date(b.created_at);
+          return buildDate >= from && buildDate <= to;
+        });
+        const totalManufacturingCost = filteredBuilds.reduce((sum, b) => sum + b.total_cost_at_build, 0);
+        const totalUnitsBuilt = filteredBuilds.reduce((sum, b) => sum + b.quantity_built, 0);
+        return {
+          title: "Manufacturing Report",
+          headers: ["Date", "Product Built", "Quantity", "Total Cost"],
+          rows: filteredBuilds.map(b => [FormatDate(b.created_at), productMap.get(b.product_id)?.name || 'N/A', b.quantity_built.toLocaleString(), FormatCurrency(b.total_cost_at_build)]),
+          summary: [
+            { label: "Total Batches", value: filteredBuilds.length },
+            { label: "Total Units Built", value: totalUnitsBuilt.toLocaleString() },
+            { label: "Total Manufacturing Cost", value: FormatCurrency(totalManufacturingCost) },
+          ]
+        };
+
+      case 'profit_loss':
+        const salesForPL = sales.filter(s => {
+          const saleDate = new Date(s.sale.sale_date);
+          return s.sale.status === 'Completed' && saleDate >= from && saleDate <= to;
+        });
+        const revenueForPL = salesForPL.reduce((sum, s) => sum + s.sale.total_amount, 0);
+        const cogsForPL = salesForPL.flatMap(s => s.items).reduce((sum, i) => sum + (i.quantity * i.cost_per_unit_at_sale), 0);
+        const profitForPL = revenueForPL - cogsForPL;
+        return {
+          title: "Profit & Loss Statement",
+          headers: ["Category", "Amount"],
+          rows: [
+            ["Gross Revenue", FormatCurrency(revenueForPL)],
+            ["Cost of Goods Sold (COGS)", `-${FormatCurrency(cogsForPL)}`],
+          ],
+          summary: [
+            { label: "Gross Profit", value: FormatCurrency(profitForPL) }
           ]
         };
 
       default:
         return null;
     }
-  }, [selectedReport, dateRange, sales, materials, products]);
+  }, [selectedReport, dateRange, sales, materials, products, builds]);
 
   const handleDownloadPdf = () => {
     if (!reportData || !dateRange?.from || !dateRange?.to) return;
@@ -150,21 +201,22 @@ export default function ReportsPage() {
     doc.setFontSize(10);
     doc.text(`Date Range: ${format(dateRange.from, "LLL dd, y")} to ${format(dateRange.to, "LLL dd, y")}`, 14, 22);
 
-    if (reportData.summary.length > 0) {
-      // const finalY = doc.lastAutoTable.finalY + 10;
-      doc.setFontSize(12);
-      doc.text("Summary:", 14, 30);
-      autoTable(doc, {
-        body: reportData.summary.map(s => [s.label, s.value]),
-        startY: 30 + 4,
-        theme: 'plain'
-      });
-    }
     autoTable(doc, {
       head: [reportData.headers],
       body: reportData.rows,
-      startY: 80,
+      startY: 28,
     });
+
+    if (reportData.summary.length > 0) {
+      const finalY = (doc as any).lastAutoTable.finalY + 10;
+      doc.setFontSize(12);
+      doc.text("Summary:", 14, finalY);
+      autoTable(doc, {
+        body: reportData.summary.map(s => [s.label, s.value]),
+        startY: finalY + 4,
+        theme: 'plain'
+      });
+    }
 
     doc.save(`${reportData.title.replace(/ /g, '_')}_${format(new Date(), 'yyyy-MM-dd')}.pdf`);
   };
@@ -175,13 +227,11 @@ export default function ReportsPage() {
 
   return (
     <div className="space-y-8 p-4 md:p-8">
-      {/* --- PAGE HEADER --- */}
       <div>
         <h1 className="text-3xl font-bold tracking-tight text-gray-900">Reports</h1>
         <p className="mt-1 text-base text-gray-600">Generate and download reports to get insights into your business performance.</p>
       </div>
 
-      {/* --- REPORT SELECTION & DATE --- */}
       <Card>
         <CardContent className="p-6 space-y-8">
           <div>
@@ -189,8 +239,8 @@ export default function ReportsPage() {
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
               <Button variant={selectedReport === 'sales' ? 'default' : 'outline'} onClick={() => setSelectedReport('sales')} className="h-20"><TrendingUp className="mr-2 h-5 w-5" />Sales Report</Button>
               <Button variant={selectedReport === 'inventory' ? 'default' : 'outline'} onClick={() => setSelectedReport('inventory')} className="h-20"><Boxes className="mr-2 h-5 w-5" />Inventory Report</Button>
-              <Button variant="outline" disabled className="h-20"><Hammer className="mr-2 h-5 w-5" />Manufacturing</Button>
-              <Button variant="outline" disabled className="h-20"><BarChart className="mr-2 h-5 w-5" />Profit & Loss</Button>
+              <Button variant={selectedReport === 'manufacturing' ? 'default' : 'outline'} onClick={() => setSelectedReport('manufacturing')} className="h-20"><Hammer className="mr-2 h-5 w-5" />Manufacturing</Button>
+              <Button variant={selectedReport === 'profit_loss' ? 'default' : 'outline'} onClick={() => setSelectedReport('profit_loss')} className="h-20"><BarChart className="mr-2 h-5 w-5" />Profit & Loss</Button>
             </div>
           </div>
           <div>
@@ -212,7 +262,6 @@ export default function ReportsPage() {
         </CardContent>
       </Card>
 
-      {/* --- REPORT DISPLAY --- */}
       {selectedReport && (
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">

@@ -60,6 +60,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     try {
       const client = await NewSPASassClient();
       await client.Logout();
+      router.push('/');
     } catch (error) {
       console.error('Error logging out:', error);
     }

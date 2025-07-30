@@ -188,7 +188,7 @@ export default function NewSalePage() {
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back to Sales
         </Button>
-        <h1 className="text-3xl font-bold tracking-tight text-gray-900">New Sale</h1>
+        <h1 className="text-3xl font-bold tracking-tight text-gray-900">Record a New Sale</h1>
         <p className="text-muted-foreground mt-1">Record a new customer order. You can save it as a draft or complete it immediately.</p>
       </div>
 
