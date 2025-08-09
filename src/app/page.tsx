@@ -112,7 +112,7 @@ export default function Home() {
           </p>
           <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
             <AuthAwareButtons />
-            <a href="https://www.producthunt.com/products/maker-s-ledger?embed=true&utm_source=badge-featured&utm_medium=badge&utm_source=badge-maker&#0045;s&#0045;ledger" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1003422&theme=light&t=1754739165393" alt="Maker&#0039;s&#0032;Ledger - The&#0032;Business&#0032;Side&#0032;of&#0032;Making&#0044;&#0032;Simplified&#0046; | Product Hunt" width="230" height="40" /></a>
+            <a href="https://www.producthunt.com/products/maker-s-ledger?embed=true&utm_source=badge-featured&utm_medium=badge&utm_source=badge-maker&#0045;s&#0045;ledger" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1003422&theme=neutral&t=1754749861548" alt="Maker&#0039;s&#0032;Ledger - The&#0032;Business&#0032;Side&#0032;of&#0032;Making&#0044;&#0032;Simplified&#0046; | Product Hunt" width="250" height="54" /></a>
           </div>
           <p className="mt-4 text-sm font-semibold text-gray-500">
             30-Day Free Trial &nbsp;•&nbsp; Cancel Anytime &nbsp;•&nbsp; From $4.5 Per Month.
