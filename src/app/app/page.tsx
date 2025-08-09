@@ -255,11 +255,17 @@ export default function DashboardPage() {
           </Card>
           <Card>
             <CardHeader>
-              <CardTitle>User Guide.</CardTitle>
-              <CardDescription className="flex items-center gap-2 pt-1">
-                <Link href={`/docs/documentation`}>Click here to read the User Guide.</Link>
-                Contact: support@makersledger.com.
-              </CardDescription>
+              <CardTitle>User Guide</CardTitle>
+              <CardContent className="text-muted-foreground py-3">
+                <ul>
+                  <li>
+                    <Link href={`/docs/documentation`}>- Click here to read the User Guide.</Link>
+                  </li>
+                  <li>
+                    - Contact: support@makersledger.com.
+                  </li>
+                </ul>
+              </CardContent>
             </CardHeader>
           </Card>
         </div>
