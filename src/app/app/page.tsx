@@ -258,6 +258,7 @@ export default function DashboardPage() {
               <CardTitle>User Guide.</CardTitle>
               <CardDescription className="flex items-center gap-2 pt-1">
                 <Link href={`/docs/documentation`}>Click here to read the User Guide.</Link>
+                Contact: support@makersledger.com.
               </CardDescription>
             </CardHeader>
           </Card>

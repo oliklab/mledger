@@ -240,8 +240,8 @@ export default function Home() {
                   </Link>
                 </li>
                 <li>
-                  <Link href="mailto:oliklabie@gmail.com" className="text-gray-600 hover:text-gray-900">
-                    Contacts
+                  <Link href="mailto:support@makersledger.com" className="text-gray-600 hover:text-gray-900">
+                    Contact Us
                   </Link>
                 </li>
               </ul>
@@ -267,7 +267,7 @@ export default function Home() {
               © {new Date().getFullYear()} Olik Software Lab. All rights reserved.
             </p>
             <p className="text-center text-gray-600">
-              ✉ Send your feedback to <a href="mailto:oliklabie@gmail.com">oliklabie@gmail.com</a>.
+              ✉ Send your feedback to <a href="mailto:support@makersledger.com">support@makersledger.com</a>.
             </p>
           </div>
         </div>

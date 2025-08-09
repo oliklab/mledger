@@ -158,7 +158,8 @@ Simultaneously, the app deducts `1` from your "Large Lavender Candle" finished g
 
 ## Need Help?
 
-If you have any questions or run into any issues, we're here to help. Please don't hesitate to reach out to our support team at **oliklabie@gmail.com**.
+If you have any questions or run into any issues, we're here to help. Please don't hesitate to reach out to our support team at 
+**support@makersledger.com**.
 
 Happy making!
 
