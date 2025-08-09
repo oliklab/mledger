@@ -253,6 +253,14 @@ export default function DashboardPage() {
               )}
             </CardContent>
           </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>User Guide.</CardTitle>
+              <CardDescription className="flex items-center gap-2 pt-1">
+                <Link href={`/docs/documentation`}>Click here to read the User Guide.</Link>
+              </CardDescription>
+            </CardHeader>
+          </Card>
         </div>
       </div>
     </div>

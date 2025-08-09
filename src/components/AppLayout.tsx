@@ -52,7 +52,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const navs2 = [
     { name: 'Profile', href: '/app/profile', icon: LucideUser },
     { name: 'Support', href: 'https://github.com/oliklab/makers-ledger/issues', icon: LucideHeartPulse },
-    { name: 'Documentation', href: '/docs/documentation', icon: LucideBook },
+    { name: 'User Guide', href: '/docs/documentation', icon: LucideBook },
     { name: 'Lanidng Page', href: '/', icon: DoorOpen },
   ]
 

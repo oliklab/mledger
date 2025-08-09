@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { ArrowRight, Globe, Shield, Users, Key, Database, Clock, AlertTriangle, Boxes, NotebookText, PackageMinus, TrendingUp, ShoppingCart, Hammer, CheckCircle } from 'lucide-react';
+import { ArrowRight, Globe, Shield, Users, Key, Database, Clock, AlertTriangle, Boxes, NotebookText, PackageMinus, TrendingUp, ShoppingCart, Hammer, CheckCircle, LucideMail } from 'lucide-react';
 import AuthAwareButtons from '@/components/AuthAwareButtons';
 import HomePricing from "@/components/HomePricing";
 
@@ -239,6 +239,11 @@ export default function Home() {
                     Report Issues
                   </Link>
                 </li>
+                <li>
+                  <Link href="mailto:oliklabie@gmail.com" className="text-gray-600 hover:text-gray-900">
+                    Contacts
+                  </Link>
+                </li>
               </ul>
             </div>
             <div>
@@ -260,6 +265,9 @@ export default function Home() {
           <div className="mt-8 pt-8 border-t border-gray-200">
             <p className="text-center text-gray-600">
               © {new Date().getFullYear()} Olik Software Lab. All rights reserved.
+            </p>
+            <p className="text-center text-gray-600">
+              ✉ Send your feedback to <a href="mailto:oliklabie@gmail.com">oliklabie@gmail.com</a>.
             </p>
           </div>
         </div>
