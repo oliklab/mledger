@@ -23,7 +23,7 @@ class PricingService {
       'Low-Stock Alerts',
     ],
     popular: true,
-    stripe_price_id: "price_1RokVvH6dC101kwLCgzWyPeA",
+    stripe_price_id: "price_1RpQNGHLA8PM7HIFc9O1ieWd", // Prod Stripe
     disabled: false
   },
   {
