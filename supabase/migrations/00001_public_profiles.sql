@@ -33,27 +33,41 @@ SELECT
 $ function $;
 
 --- Function to Trigger when auth.user is created.
-begin
-insert into
-  public.profiles (
-    id,
-    first_name,
-    last_name,
-    phone_number,
-    location
-  )
-values
-  (
-    new.id,
-    new.raw_user_meta_data ->> 'first_name',
-    new.raw_user_meta_data ->> 'last_name',
-    new.raw_user_meta_data ->> 'phone_number',
-    new.raw_user_meta_data ->> 'location'
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER AS $$
+DECLARE
+  -- Variables are declared here, BEFORE the main logic begins.
+  first_name_val TEXT;
+  last_name_val TEXT;
+BEGIN
+  -- This is the main logic block.
+
+  -- Check if the user signed up with an OAuth provider that gives a 'full_name'
+  IF NEW.raw_user_meta_data ->> 'full_name' IS NOT NULL THEN
+    -- If 'full_name' exists, split it into first and last names.
+    first_name_val := split_part(NEW.raw_user_meta_data ->> 'full_name', ' ', 1);
+    last_name_val := substring(NEW.raw_user_meta_data ->> 'full_name' FROM position(' ' IN NEW.raw_user_meta_data ->> 'full_name') + 1);
+  ELSE
+    -- For regular email signups, 'full_name' will be null. Set names to NULL.
+    -- This is safer than assuming 'first_name' exists in the metadata.
+    first_name_val := NULL;
+    last_name_val := NULL;
+  END IF;
+
+  -- Insert the new row into the public.profiles table.
+  -- This will safely insert NULL if phone or location aren't provided by the auth provider.
+  INSERT INTO public.profiles (id, first_name, last_name, phone_number, location)
+  VALUES (
+    NEW.id,
+    first_name_val,
+    last_name_val,
+    NEW.raw_user_meta_data ->> 'phone_number',
+    NEW.raw_user_meta_data ->> 'location'
   );
 
-return new;
-
-end;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
 
 --- Table Policy.
 CREATE POLICY "Users can update own profile" ON profiles FOR

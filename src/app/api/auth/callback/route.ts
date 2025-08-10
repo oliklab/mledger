@@ -18,7 +18,7 @@ export async function GET(request: Request) {
 
     if (aalError) {
       console.error('Error checking MFA status:', aalError)
-      return NextResponse.redirect(new URL('/auth/login', request.url))
+      return NextResponse.redirect(new URL('/auth/register', request.url))
     }
 
     // If user needs to complete MFA verification
@@ -31,5 +31,5 @@ export async function GET(request: Request) {
   }
 
   // If no code provided, redirect to login
-  return NextResponse.redirect(new URL('/auth/login', request.url))
+  return NextResponse.redirect(new URL('/auth/register', request.url))
 }
