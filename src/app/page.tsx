@@ -3,6 +3,13 @@ import Link from 'next/link';
 import { ArrowRight, Globe, Shield, Users, Key, Database, Clock, AlertTriangle, Boxes, NotebookText, PackageMinus, TrendingUp, ShoppingCart, Hammer, CheckCircle, LucideMail } from 'lucide-react';
 import AuthAwareButtons from '@/components/AuthAwareButtons';
 import HomePricing from "@/components/HomePricing";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Calculator } from 'lucide-react';
 
 export default function Home() {
   const productName = process.env.NEXT_PUBLIC_PRODUCTNAME || 'Makers Ledger';
@@ -102,7 +109,7 @@ export default function Home() {
         style={{ backgroundImage: `url('/landing-hero.png')` }}
       >
         {/* Semi-transparent overlay for text readability */}
-        <div className="absolute inset-0 bg-white/80 backdrop-blur-sm"></div>
+        <div className="absolute inset-0 bg-white/85 backdrop-blur-sm"></div>
 
         {/* Content container */}
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -204,6 +211,75 @@ export default function Home() {
 
       <HomePricing />
 
+      <section className="py-24 bg-gray-50">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold tracking-tight text-slate-900">
+              Frequently Asked Questions
+            </h2>
+          </div>
+          <Accordion type="single" collapsible className="w-full">
+
+            {/* Question 1 */}
+            <AccordionItem value="item-1">
+              <AccordionTrigger className="text-lg text-left font-medium">Who is Maker's Ledger for?</AccordionTrigger>
+              <AccordionContent className="text-base leading-relaxed text-gray-700">
+                Maker's Ledger is designed specifically for hobbyists, side-hustlers, and early-stage handmade business owners. If you sell on Etsy, at craft fairs, or through social media and are currently using a messy spreadsheet (or nothing at all!) to track your costs, this tool is built for you. We focus on clarity and simplicity, not complex accounting jargon.
+              </AccordionContent>
+            </AccordionItem>
+
+            {/* Question 2 */}
+            <AccordionItem value="item-2">
+              <AccordionTrigger className="text-lg text-left font-medium">Is this a full accounting app?</AccordionTrigger>
+              <AccordionContent className="text-base leading-relaxed text-gray-700">
+                No, and that's our strength. Maker's Ledger is intentionally focused on **inventory and material cost tracking (COGS)**, the two areas where general accounting software fails for makers. We are not a replacement for QuickBooks or Xero, but a specialized tool designed to solve the unique challenges of a handmade business before you need a full accounting suite.
+              </AccordionContent>
+            </AccordionItem>
+
+            {/* Question 3 */}
+            <AccordionItem value="item-3">
+              <AccordionTrigger className="text-lg text-left font-medium">Can I track my labor or overhead costs?</AccordionTrigger>
+              <AccordionContent className="text-base leading-relaxed text-gray-700">
+                Currently, our focus is on perfecting the most difficult part of craft business finance: calculating your precise **material costs**. We believe getting this number right is the foundation for confident pricing. While direct labor and overhead tracking isn't available in the current version, many users handle overheads by adding them as a monthly "material" purchase to factor them into their overall costs.
+              </AccordionContent>
+            </AccordionItem>
+
+            {/* Question 4 */}
+            <AccordionItem value="item-4">
+              <AccordionTrigger className="text-lg text-left font-medium">Does this track inventory for my Etsy or Shopify shop?</AccordionTrigger>
+              <AccordionContent className="text-base leading-relaxed text-gray-700">
+                Yes! Our Upcoming "Crafter" plan will integrate directly with Etsy and Shopify to automatically sync your orders. This means when you make a sale on Etsy, the finished product is automatically deducted from your Maker's Ledger inventory, giving you a real-time view of your stock levels without any manual entry.
+              </AccordionContent>
+            </AccordionItem>
+
+            {/* Question 5 */}
+            <AccordionItem value="item-5">
+              <AccordionTrigger className="text-lg text-left font-medium">Is there a free trial?</AccordionTrigger>
+              <AccordionContent className="text-base leading-relaxed text-gray-700">
+                Yes, all new users receive a **30-day free trial** with full access to all features of the "Crafter" plan. No credit card is required to start your trial. We want you to be completely sure that Maker's Ledger is the right fit for your business before you subscribe.
+              </AccordionContent>
+            </AccordionItem>
+
+            {/* Question 6 */}
+            <AccordionItem value="item-6">
+              <AccordionTrigger className="text-lg text-left font-medium">Is my data secure?</AccordionTrigger>
+              <AccordionContent className="text-base leading-relaxed text-gray-700">
+                Absolutely. Your data security is our top priority. We use industry-standard encryption for all data in transit and at rest. As an Irish company, we are fully compliant with GDPR regulations, ensuring your information is handled with the highest level of privacy and care.
+              </AccordionContent>
+            </AccordionItem>
+
+            {/* Question 7 */}
+            <AccordionItem value="item-7">
+              <AccordionTrigger className="text-lg text-left font-medium">How is this different from a spreadsheet?</AccordionTrigger>
+              <AccordionContent className="text-base leading-relaxed text-gray-700">
+                While spreadsheets are free, they are time-consuming and prone to costly errors. Maker's Ledger automates all the complex calculations. When you log a new material purchase, it automatically calculates a new weighted average cost. When you log a production run, it automatically deducts all the correct raw materials. It saves you hours of manual data entry and prevents mistakes that could be costing you money.
+              </AccordionContent>
+            </AccordionItem>
+
+          </Accordion>
+        </div>
+      </section>
+
       <section className="py-24 bg-primary-600">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold text-white">
@@ -219,6 +295,71 @@ export default function Home() {
             Get Started Now with 30 Day Free Trial
             <ArrowRight className="ml-2 h-5 w-5" />
           </Link>
+        </div>
+      </section>
+
+      <section className="py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+          {/* Section Header */}
+          <div className="text-center max-w-3xl mx-auto">
+            <h2 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+              From Spreadsheet Chaos to Crafting Clarity
+            </h2>
+            <p className="mt-4 text-lg text-gray-600">
+              An inventory and cost-tracking tool that finally speaks your language.
+            </p>
+          </div>
+
+          {/* Stylish 3-Column Layout */}
+          <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-x-12 gap-y-10">
+
+            {/* Column 1: Focus on COGS */}
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0">
+                <div className="flex items-center justify-center h-12 w-12 rounded-lg bg-primary-100">
+                  <Calculator className="h-6 w-6 text-primary-600" />
+                </div>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-slate-800">Master Your True Costs</h3>
+                <p className="mt-2 text-gray-700">
+                  Our recipe-based system automatically calculates your <strong>Cost of Goods Sold (COGS)</strong> for every item. Know your exact material costs and stop guessing at your prices.
+                </p>
+              </div>
+            </div>
+
+            {/* Column 2: Focus on Inventory Management */}
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0">
+                <div className="flex items-center justify-center h-12 w-12 rounded-lg bg-primary-100">
+                  <Boxes className="h-6 w-6 text-primary-600" />
+                </div>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-slate-800">Effortless Inventory Tracking</h3>
+                <p className="mt-2 text-gray-700">
+                  Perfect for <strong>Etsy inventory management</strong>, our app tracks raw materials and finished goods in real-time. Log a production run, and we deduct the components automatically.
+                </p>
+              </div>
+            </div>
+
+            {/* Column 3: Focus on Competitive Advantage */}
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0">
+                <div className="flex items-center justify-center h-12 w-12 rounded-lg bg-primary-100">
+                  <CheckCircle className="h-6 w-6 text-primary-600" />
+                </div>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-slate-800">The Simple Alternative</h3>
+                <p className="mt-2 text-gray-700">
+                  Tired of complex, expensive tools? Maker's Ledger is the simple <strong>Craftybase alternative</strong> designed for makers, not accountants. Get the features you actually need, without the bloat.
+                </p>
+              </div>
+            </div>
+
+          </div>
         </div>
       </section>
 

@@ -7,8 +7,12 @@ import { Toaster } from "@/components/ui/toaster"
 
 
 export const metadata: Metadata = {
-  title: process.env.NEXT_PUBLIC_PRODUCTNAME,
-  description: "The simple way to track materials, recipes, and profits - for the creators.",
+  title: "Maker's Ledger | Inventory & Bookkeeping for crafters",
+  description: "Stop guessing profits. Maker's Ledger is the simple inventory and cost-tracking app for Etsy sellers and crafters. Track raw materials, calculate your true COGS with our recipe system, and price your handmade products with confidence. Try it free.",
+  metadataBase: new URL('https://makersledger.com/'),
+  alternates: {
+    canonical: 'https://makersledger.com/',
+  },
 };
 
 export default function RootLayout({
@@ -20,10 +24,68 @@ export default function RootLayout({
   if (!theme) {
     theme = "theme-sass3"
   }
-  const gaID = process.env.NEXT_PUBLIC_GOOGLE_TAG;
+  const gaID = 'G-LG6PY822G8';
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Maker's Ledger",
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "Web",
+    "description": "Maker's Ledger is a simple inventory and cost-tracking app for Etsy sellers and handmade creators. Track raw materials, calculate your true COGS with our recipe system, and price your products with confidence.",
+    "url": "https://makersledger.com/",
+    "offers": {
+      "@type": "AggregateOffer",
+      "lowPrice": "5.00",
+      "highPrice": "15.00",
+      "priceCurrency": "USD",
+      "offers": [
+        {
+          "@type": "Offer",
+          "name": "Hobbyist Plan",
+          "price": "5.00",
+          "priceCurrency": "USD",
+          "priceSpecification": {
+            "@type": "PriceSpecification",
+            "price": "5.00",
+            "priceCurrency": "USD",
+            "valueAddedTaxIncluded": true,
+            "billingIncrement": "P1M"
+          }
+        },
+        {
+          "@type": "Offer",
+          "name": "Crafter Plan",
+          "price": "9.00",
+          "priceCurrency": "USD",
+          "priceSpecification": {
+            "@type": "PriceSpecification",
+            "price": "9.00",
+            "priceCurrency": "USD",
+            "valueAddedTaxIncluded": true,
+            "billingIncrement": "P1M"
+          }
+        }
+      ]
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Olik Software Lab",
+      "url": "https://makersledger.com/"
+    }
+  };
+
   return (
     <html lang="en">
       <body className={theme}>
+        <section>
+          {/* Add JSON-LD to your page */}
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c'),
+            }}
+          />
+        </section>
         {children}
         <Analytics />
         <CookieConsent />
