@@ -81,13 +81,16 @@ export default function Home() {
                 {productName}
               </span>
             </div>
-            <div className="hidden md:flex items-center space-x-8">
-              <Link href="#features" className="text-gray-600 hover:text-gray-900">
+            {/* Container is now always a flex container */}
+            <div className="flex items-center gap-4 md:gap-8">
+              {/* These links are hidden on mobile, but appear on medium screens and up */}
+              <Link href="#features" className="hidden md:inline-block text-gray-600 hover:text-gray-900">
                 Features
               </Link>
-              <Link href="#pricing" className="text-gray-600 hover:text-gray-900">
+              <Link href="#pricing" className="hidden md:inline-block text-gray-600 hover:text-gray-900">
                 Pricing
               </Link>
+              {/* This button component is now visible on all screen sizes */}
               <AuthAwareButtons variant="nav" />
             </div>
           </div>
@@ -112,7 +115,18 @@ export default function Home() {
           </p>
           <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
             <AuthAwareButtons />
-            <a href="https://www.producthunt.com/products/maker-s-ledger?embed=true&utm_source=badge-featured&utm_medium=badge&utm_source=badge-maker&#0045;s&#0045;ledger" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1003422&theme=neutral&t=1754749861548" alt="Maker&#0039;s&#0032;Ledger - The&#0032;Business&#0032;Side&#0032;of&#0032;Making&#0044;&#0032;Simplified&#0046; | Product Hunt" width="250" height="54" /></a>
+            <a
+              href="https://www.producthunt.com/products/maker-s-ledger?embed=true&utm_source=badge-featured&utm_medium=badge&utm_source=badge-maker&#0045;s&#0045;ledger"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white shadow-sm hover:bg-gray-50 transition-colors"
+            >
+              <svg width="20" height="20" viewBox="0 0 20 20" className="mr-2 text-orange-500">
+                {/* Product Hunt Cat SVG */}
+                <path d="M10 0C4.477 0 0 4.477 0 10c0 5.523 4.477 10 10 10s10-4.477 10-10C20 4.477 15.523 0 10 0zM8 15V5l6 5-6 5z" fill="currentColor" />
+              </svg>
+              Follow on Product Hunt
+            </a>
           </div>
           <p className="mt-4 text-sm font-semibold text-gray-500">
             30-Day Free Trial &nbsp;•&nbsp; Cancel Anytime &nbsp;•&nbsp; From $4.5 Per Month.
