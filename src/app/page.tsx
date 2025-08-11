@@ -97,6 +97,9 @@ export default function Home() {
               <Link href="#pricing" className="hidden md:inline-block text-gray-600 hover:text-gray-900">
                 Pricing
               </Link>
+              <Link href="https://discord.gg/BpvYhcb3jd" target="_blank" className="hidden md:inline-block text-gray-600 hover:text-gray-900">
+                Discord
+              </Link>
               {/* This button component is now visible on all screen sizes */}
               <AuthAwareButtons variant="nav" />
             </div>
@@ -390,8 +393,13 @@ export default function Home() {
                   </Link>
                 </li>
                 <li>
-                  <Link href="https://github.com/oliklab/makers-ledger/issues" className="text-gray-600 hover:text-gray-900">
+                  <Link href="https://github.com/oliklab/makers-ledger/issues" target="_blank" className="text-gray-600 hover:text-gray-900">
                     Report Issues
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/docs/documentation" target="_blank" className="text-gray-600 hover:text-gray-900">
+                    Discord
                   </Link>
                 </li>
                 <li>

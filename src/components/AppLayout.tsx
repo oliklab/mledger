@@ -24,6 +24,7 @@ import {
   LucideUser,
   LucideListChecks,
   LucideActivitySquare,
+  LucideMessageCircle,
 } from 'lucide-react';
 import { UseUserContext } from "@/lib/context/GlobalContext";
 import { NewSPASassClient } from "@/lib/supabase/client";
@@ -51,6 +52,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   const navs2 = [
     { name: 'Profile', href: '/app/profile', icon: LucideUser },
+    { name: 'Discord', href: 'https://discord.gg/BpvYhcb3jd', icon: LucideMessageCircle },
     { name: 'Support', href: 'https://github.com/oliklab/makers-ledger/issues', icon: LucideHeartPulse },
     { name: 'User Guide', href: '/docs/documentation', icon: LucideBook },
     { name: 'Lanidng Page', href: '/', icon: DoorOpen },
