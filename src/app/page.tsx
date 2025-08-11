@@ -398,7 +398,7 @@ export default function Home() {
                   </Link>
                 </li>
                 <li>
-                  <Link href="/docs/documentation" target="_blank" className="text-gray-600 hover:text-gray-900">
+                  <Link href="https://discord.gg/BpvYhcb3jd" target="_blank" className="text-gray-600 hover:text-gray-900">
                     Discord
                   </Link>
                 </li>
