@@ -134,8 +134,6 @@ export default function DashboardPage() {
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   }, [user]);
 
-
-  const hasActiveSubscription = useMemo(() => HasActiveSubscription(user?.subscription), [user]);
   if (initialLoading) {
     return <div className="p-8"><Skeleton className="h-screen w-full" /></div>;
   }
@@ -149,21 +147,6 @@ export default function DashboardPage() {
           Welcome back! Here's a snapshot of your business activity for {new Date().toLocaleString('en-IE', { month: 'long', year: 'numeric' })}.
         </p>
       </div>
-
-      {/* --- SUBSCRIPTION ALERT --- */}
-      {!hasActiveSubscription && (
-        <Alert>
-          <CreditCard className="h-4 w-4" />
-          <AlertTitle>Please Subscribe</AlertTitle>
-          <AlertDescription className="flex items-center justify-between">
-            You do not have any active Subscription. Upgrade to unlock all features.<br />
-            30 day Free trial. Use promo code PH6OFF for additional 50% off for 6 months.
-            <Button asChild size="sm">
-              <Link href="/app/payments">View Plans <ArrowRight className="ml-2 h-4 w-4" /></Link>
-            </Button>
-          </AlertDescription>
-        </Alert>
-      )}
 
       {error && <Alert variant="destructive"><AlertCircle className="h-4 w-4" /><AlertDescription>{error}</AlertDescription></Alert>}
 

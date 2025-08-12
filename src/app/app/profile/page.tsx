@@ -142,7 +142,8 @@ export default function UserSettingsPage() {
                   )}
                 </div>
               ) : (
-                <p className="text-sm text-muted-foreground">You are not currently subscribed to any plan.</p>
+                <p className="text-sm text-muted-foreground">You are currently in Free tier with limited Features.
+                  Upgrade to unlock all features with 30 day Free trial.</p>
               )}
             </CardContent>
             <CardFooter className="border-t px-6 py-4">

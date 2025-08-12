@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { UseUserContext } from '@/lib/context/GlobalContext';
 import { useToast } from '@/hooks/use-toast';
@@ -12,7 +12,6 @@ export function SubscriptionGuard({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { toast } = useToast();
   const subscription = user?.subscription;
-
 
   useEffect(() => {
     // Wait until the user and subscription data has finished loading
@@ -49,8 +48,6 @@ export function SubscriptionGuard({ children }: { children: React.ReactNode }) {
       '/app/products': { limit: 2, countKey: 'products' },
       // '/app/orders': { limit: 10, countKey: 'orders' },
     };
-    const matchingPath = Object.keys(freePageQuotas).find(prefix => pathname.startsWith(prefix));
-
 
     if (user && !hasActiveSubscription) {
       // User doens't have an active subscription.
@@ -93,5 +90,7 @@ export function SubscriptionGuard({ children }: { children: React.ReactNode }) {
   }
 
   // If checks pass, render the actual page content
-  return <>{children}</>;
+  return <>
+    {children}
+  </>;
 }

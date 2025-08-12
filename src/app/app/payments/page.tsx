@@ -65,7 +65,7 @@ export default function PaymentsPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-          {pricingTiers.map(tier => (
+          {pricingTiers.filter(tier => !tier.free).map(tier => (
             <Card
               key={tier.name}
               className={`flex flex-col h-full transition-all duration-300 ${tier.popular ? 'border-primary shadow-lg' : ''} ${tier.disabled ? 'bg-slate-100 text-muted-foreground' : ''}`}

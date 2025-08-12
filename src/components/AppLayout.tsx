@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
@@ -25,11 +25,16 @@ import {
   LucideListChecks,
   LucideActivitySquare,
   LucideMessageCircle,
+  CreditCard,
+  ArrowRight,
 } from 'lucide-react';
 import { UseUserContext } from "@/lib/context/GlobalContext";
 import { NewSPASassClient } from "@/lib/supabase/client";
 import md5 from 'md5';
 import GravatarCard from '@/components/Gravatar';
+import { HasActiveSubscription } from '@/lib/utils';
+import { Alert, AlertDescription, AlertTitle } from './ui/alert';
+import { Button } from './ui/button';
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -38,6 +43,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const { user } = UseUserContext();
+
+  const hasActiveSubscription = useMemo(() => HasActiveSubscription(user?.subscription), [user]);
 
   const navigation = [
     { name: 'Dashbaord', href: '/app', icon: Home },
@@ -224,6 +231,20 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </div>
 
         <main className="p-4">
+          {!hasActiveSubscription && pathname != '/app/payments' && (
+            <Alert>
+              <CreditCard className="h-4 w-4" />
+              <AlertTitle>Please Subscribe</AlertTitle>
+              <AlertDescription className="flex items-center justify-between">
+                You are currently in Free tier with limited Features.<br />
+                Upgrade to unlock all features. 30 day Free trial. Use promo code PH6OFF for additional 50% off for 6 months.
+                <Button asChild size="sm">
+                  <Link href="/app/payments">View Plans <ArrowRight className="ml-2 h-4 w-4" /></Link>
+                </Button>
+              </AlertDescription>
+            </Alert>
+          )}
+
           {children}
         </main>
       </div>
