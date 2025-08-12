@@ -59,6 +59,9 @@ export default function PaymentsPage() {
           <p className="mt-4 text-lg text-muted-foreground">
             Unlock the full potential of your craft business.
           </p>
+          <p className="mt-4 text-lg">
+            30 day Free trial. Use promo code <strong>PH6OFF</strong> for additional 50% off for 6 months.
+          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">

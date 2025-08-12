@@ -3,12 +3,14 @@
 import React, { useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { UseUserContext } from '@/lib/context/GlobalContext';
+import { useToast } from '@/hooks/use-toast';
 
 // This component wraps your protected routes
 export function SubscriptionGuard({ children }: { children: React.ReactNode }) {
   const { user, loading } = UseUserContext();
   const router = useRouter();
   const pathname = usePathname();
+  const { toast } = useToast();
   const subscription = user?.subscription;
 
 
@@ -23,14 +25,61 @@ export function SubscriptionGuard({ children }: { children: React.ReactNode }) {
       '/app',
       '/app/payments',
       '/app/payments/pricing',
-      '/app/profile'];
+      '/app/profile'
+    ];
 
     // Check if the user is logged in but has no active subscription
     const status = subscription?.status;
     const hasActiveSubscription = status === 'active' || status === 'trialing';
 
-    if (user && !hasActiveSubscription && !allowedPaths.includes(pathname)) {
-      router.push('/app/payments');
+    type QuotaConfig = {
+      // The key is the path prefix to check against.
+      [pathPrefix: string]: {
+        limit: number;
+        // The key in the user.element_counts object to check.
+        countKey: 'materials' | 'purchases' | 'recipes' | 'products';
+      };
+    };
+
+    // 2. All your quotas are now in one, easy-to-manage, type-safe object.
+    const freePageQuotas: QuotaConfig = {
+      '/app/materials': { limit: 5, countKey: 'materials' },
+      '/app/purchases': { limit: 3, countKey: 'purchases' },
+      '/app/recipes': { limit: 2, countKey: 'recipes' },
+      '/app/products': { limit: 2, countKey: 'products' },
+      // '/app/orders': { limit: 10, countKey: 'orders' },
+    };
+    const matchingPath = Object.keys(freePageQuotas).find(prefix => pathname.startsWith(prefix));
+
+
+    if (user && !hasActiveSubscription) {
+      // User doens't have an active subscription.
+      // First, check if the current path is NOT on the list of free pages.
+      if (!allowedPaths.includes(pathname)) {
+
+        // The user is on a potentially restricted page. Now check the quotas.
+        const matchingPath = Object.keys(freePageQuotas).find(prefix => pathname.startsWith(prefix));
+        if (matchingPath) {
+          // A quota rule exists. Check if the user has exceeded it.
+          const quota = freePageQuotas[matchingPath];
+          const currentCount = user.element_counts?.[quota.countKey] ?? 0;
+
+          if (currentCount > quota.limit) {
+            // User is over their limit for this feature. Redirect.
+            toast({
+              variant: 'destructive',
+              title: 'Free Plan Limit Reached',
+              description: "You've created the maximum number of items allowed on the free plan. Please upgrade to add more.",
+            });
+            router.push('/app/payments');
+          }
+          // If they are under the limit, we do nothing and access is implicitly granted.
+        } else {
+          // The path is NOT in the allowed list AND does NOT have a quota.
+          // This means it's a premium page that requires a subscription. Redirect.
+          router.push('/app/payments');
+        }
+      }
     }
   }, [user, subscription, loading, pathname, router]);
 

@@ -274,3 +274,28 @@ p_operation_type;
 END IF;
 
 END;
+
+CREATE OR REPLACE FUNCTION get_user_dashboard_counts()
+RETURNS JSONB -- It will return a single JSON object with all the counts.
+AS $$
+DECLARE
+  materials_count INT;
+  material_purchases_count INT;
+  recipes_count INT;
+BEGIN
+  -- Securely get the count for each table, filtering by the currently logged-in user.
+  -- The auth.uid() function gets the user's ID from their session token.
+  SELECT count(*) INTO materials_count FROM public.materials WHERE user_id = auth.uid();
+  SELECT count(*) INTO material_purchases_count FROM public.material_purchases WHERE user_id = auth.uid();
+  SELECT count(*) INTO recipes_count FROM public.recipes WHERE user_id = auth.uid();
+
+  -- Combine all the counts into a single JSON object and return it.
+  RETURN jsonb_build_object(
+    'materials', materials_count,
+    'purchases', material_purchases_count,
+    'recipes', recipes_count
+  );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+

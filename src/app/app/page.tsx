@@ -156,7 +156,8 @@ export default function DashboardPage() {
           <CreditCard className="h-4 w-4" />
           <AlertTitle>Please Subscribe</AlertTitle>
           <AlertDescription className="flex items-center justify-between">
-            You do not have any active Subscription. Upgrade to unlock all features.
+            You do not have any active Subscription. Upgrade to unlock all features.<br />
+            30 day Free trial. Use promo code PH6OFF for additional 50% off for 6 months.
             <Button asChild size="sm">
               <Link href="/app/payments">View Plans <ArrowRight className="ml-2 h-4 w-4" /></Link>
             </Button>

@@ -7,6 +7,7 @@ export type AuthUser = {
   registered_at: Date;
   profile: UserProfile;
   subscription?: Subscription;
+  element_counts?: ElementCounts;
 };
 
 export type Subscription = {
@@ -19,6 +20,14 @@ export type Subscription = {
   current_period_end: Date;
   created_at: Date;
   updated_at: Date;
+}
+
+export type ElementCounts = {
+  materials: number;
+  products: number;
+  recipes: number;
+  purchases: number;
+  sales: number;
 }
 
 export class AuthStore {
@@ -49,12 +58,19 @@ export class AuthStore {
         .order('created_at', { ascending: false })
         .single();
 
+      const { data: counts, error } = await this.store.SupabaseClient().rpc('get_user_dashboard_counts');
+      if (error) {
+        console.error('Error fetching dashboard counts:', error);
+        return null;
+      }
+
       return {
         email: authUser.email!,
         id: authUser.id,
         registered_at: new Date(authUser.created_at),
         profile: profile,
         subscription: data as Subscription,
+        element_counts: counts as ElementCounts,
       } as AuthUser;
     }
     throw 'error: user profile not found';
